@@ -47,7 +47,7 @@ class StackdriverTransport extends Transport {
 
   async log(info, callback) {
     try {
-      this.writeLog(info, callback);
+      await this.writeLog(info, callback);
     } catch (e) {
       throw e;
     }
