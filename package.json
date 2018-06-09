@@ -1,6 +1,6 @@
 {
   "name": "gcloud-logger",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "simple logger for gcp",
   "main": "index.js",
   "scripts": {
