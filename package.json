@@ -1,0 +1,56 @@
+{
+  "name": "gcloud-logger",
+  "version": "0.0.1",
+  "description": "simple logger for gcp",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a-pavlenko/gcloud-logger.git"
+  },
+  "keywords": [
+    "logger",
+    "google cloud platform",
+    "stackdriver"
+  ],
+  "author": "a-pavlenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/a-pavlenko/gcloud-logger/issues"
+  },
+  "homepage": "https://github.com/a-pavlenko/gcloud-logger#readme",
+  "devDependencies": {
+    "babel-eslint": "^8.2.3",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0",
+    "husky": "^1.0.0-rc.1",
+    "lint-staged": "^7.1.0",
+    "prettier": "^1.12.1"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "dependencies": {
+    "@google-cloud/logging": "^1.2.0",
+    "winston": "^3.0.0-rc6",
+    "winston-transport": "^4.1.0"
+  }
+}
