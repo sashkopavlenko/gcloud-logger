@@ -17,7 +17,7 @@ const logger = gcloudLogger.createLogger({
 });
 
 logger.debug('Debug');
-logger.warn(new Error('Warning!'));
+logger.error(new Error('Something went wrong'));
 ```
 
 # Levels
