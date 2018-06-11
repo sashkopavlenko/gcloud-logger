@@ -6,7 +6,7 @@
 
 # Example Usage
 
-```
+```js
 const gcloudLogger = require('gcloud-logger');
 
 const logger = gcloudLogger.createLogger({
@@ -22,7 +22,7 @@ logger.warn(new Error('Warning!'));
 
 Available logging levels and corresponding Stackdriver severity:
 
-```
+```js
 logger.debug('Debug');
 logger.info('Info');
 logger.notice('Info');
