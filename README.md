@@ -2,7 +2,9 @@
 
 # Installation
 
-`npm install gcloud-logger`
+```bash
+npm install gcloud-logger
+```
 
 # Example Usage
 
