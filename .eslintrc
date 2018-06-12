@@ -4,8 +4,9 @@
   "rules": {
     "max-len": [
       "error", {
-        "code": 80
+        "code": 80,
       }
     ],
+    "no-undef": "off"
   }
 }
