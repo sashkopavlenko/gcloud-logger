@@ -2,8 +2,11 @@
   "name": "gcloud-logger",
   "version": "0.0.2",
   "description": "simple logger for gcp",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "prepublish": "npm run build",
+    "build": "tsc",
     "test": "jest"
   },
   "repository": {
@@ -30,7 +33,8 @@
     "eslint-plugin-react": "^7.7.0",
     "husky": "^1.0.0-rc.1",
     "lint-staged": "^7.1.0",
-    "prettier": "^1.12.1"
+    "prettier": "^1.12.1",
+    "typescript-eslint-parser": "^16.0.0"
   },
   "lint-staged": {
     "*.js": [
