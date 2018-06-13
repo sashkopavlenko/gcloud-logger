@@ -1,9 +1,17 @@
-const winston = require('winston');
-const util = require('util');
-const TransportStackdriver = require('./transports/stackdriver.ts');
+import * as winston from 'winston';
+import * as util from 'util';
+import TransportStackdriver from './transports/stackdriver';
 
 const { format } = winston;
 const { levels, colors } = winston.config.syslog;
+
+interface Options {
+  console: boolean;
+  stackdriver?: {
+    projectId: string;
+    logName: string;
+  };
+}
 
 winston.addColors(colors);
 
@@ -19,7 +27,7 @@ const formatter = format.combine(
   format.printf(formatPrint)
 );
 
-function getTransports(options) {
+function getTransports(options: Options) {
   const transports = [];
   const config = { handleExceptions: true };
   if (options.console) {
@@ -33,16 +41,7 @@ function getTransports(options) {
   return transports;
 }
 
-interface Options {
-  transports: {
-    console: boolean;
-    stackdriver: boolean;
-  };
-  projectId: string;
-  logName: string;
-}
-
-function createLogger(options: Options) {
+function createLogger(options: Options): winston.Logger {
   return winston.createLogger({
     levels,
     transports: getTransports(options),
@@ -52,4 +51,4 @@ function createLogger(options: Options) {
   });
 }
 
-module.exports = { createLogger };
+export default { createLogger };
