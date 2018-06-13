@@ -8,9 +8,7 @@ const { levels, colors } = winston.config.syslog;
 winston.addColors(colors);
 
 function formatPrint(info) {
-  const {
-    level, message, timestamp, stack,
-  } = info;
+  const { level, message, timestamp, stack } = info;
   const msg = typeof message === 'object' ? util.inspect(message) : message;
   return `${timestamp} ${level} ${stack || msg}`;
 }
@@ -18,7 +16,7 @@ function formatPrint(info) {
 const formatter = format.combine(
   format.colorize(),
   format.timestamp(),
-  format.printf(formatPrint),
+  format.printf(formatPrint)
 );
 
 function getTransports(options) {

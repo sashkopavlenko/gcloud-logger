@@ -25,7 +25,7 @@ class StackdriverTransport extends Transport {
     const { message, stack } = info;
     const level = info[Symbol.for('level')];
     const severity = severityLevels[level];
-    const metadata = { resource: { type: 'global' }, severity };
+    const metadata = { severity, resource: { type: 'global' } };
 
     const payload = {
       serviceContext: { service: this.service },
