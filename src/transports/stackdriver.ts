@@ -12,7 +12,7 @@ const severityLevels = {
   emerg: 800,
 };
 
-class StackdriverTransport extends Transport {
+export default class StackdriverTransport extends Transport {
   constructor(options, logOptions) {
     super(options);
     const { projectId, logName } = logOptions;
@@ -53,5 +53,3 @@ class StackdriverTransport extends Transport {
     }
   }
 }
-
-module.exports = StackdriverTransport;

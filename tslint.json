@@ -3,6 +3,7 @@
   "rules": {
     "max-len": ["error", { "code": 80 }],
     "variable-name": ["allow-pascal-case"],
-    "trailing-comma": [{ "esSpecCompliant": true }]
+    "trailing-comma": [true, { "esSpecCompliant": true }],
+    "import-name": [false]
   }
 }
