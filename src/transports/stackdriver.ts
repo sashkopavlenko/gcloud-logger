@@ -1,5 +1,10 @@
-const Transport = require('winston-transport');
-const Logging = require('@google-cloud/logging');
+import * as Transport from 'winston-transport';
+import * as Logging from '@google-cloud/logging';
+
+interface StackdriverLogOptions {
+  projectId: string;
+  logName: string;
+}
 
 const severityLevels = {
   debug: 100,
@@ -13,10 +18,17 @@ const severityLevels = {
 };
 
 export default class StackdriverTransport extends Transport {
-  constructor(options, logOptions) {
+  service: string;
+  logger: Logging;
+
+  constructor(
+    options: Transport.TransportStreamOptions,
+    logOptions: StackdriverLogOptions
+  ) {
     super(options);
     const { projectId, logName } = logOptions;
     this.service = logName;
+
     const logging = new Logging({ projectId });
     this.logger = logging.log(logName);
   }
