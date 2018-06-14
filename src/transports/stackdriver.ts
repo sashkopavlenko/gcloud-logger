@@ -1,5 +1,12 @@
-const Transport = require('winston-transport');
-const Logging = require('@google-cloud/logging');
+import * as winston from 'winston';
+import * as Transport from 'winston-transport';
+import * as logform from 'logform';
+import * as Logging from '@google-cloud/logging';
+
+interface StackdriverLogOptions {
+  projectId: string;
+  logName: string;
+}
 
 const severityLevels = {
   debug: 100,
@@ -12,20 +19,26 @@ const severityLevels = {
   emerg: 800,
 };
 
-class StackdriverTransport extends Transport {
-  constructor(options, logOptions) {
+export default class StackdriverTransport extends Transport {
+  service: string;
+  logger: Logging;
+
+  constructor(
+    options: Transport.TransportStreamOptions,
+    logOptions: StackdriverLogOptions
+  ) {
     super(options);
     const { projectId, logName } = logOptions;
     this.service = logName;
+
     const logging = new Logging({ projectId });
     this.logger = logging.log(logName);
   }
 
-  prepareEntry(info) {
-    const { message, stack } = info;
-    const level = info[Symbol.for('level')];
+  prepareEntry(info: logform.TransformableInfo) {
+    const { message, stack, noncolorizedLevel: level } = info;
     const severity = severityLevels[level];
-    const metadata = { resource: { type: 'global' }, severity };
+    const metadata = { severity, resource: { type: 'global' } };
 
     const payload = {
       serviceContext: { service: this.service },
@@ -35,7 +48,10 @@ class StackdriverTransport extends Transport {
     return this.logger.entry(metadata, payload);
   }
 
-  async writeLog(info, callback) {
+  async writeLog(
+    info: logform.TransformableInfo,
+    callback: winston.LogCallback
+  ) {
     const entry = this.prepareEntry(info);
     await this.logger.write(entry);
     this.emit('logged', info);
@@ -45,7 +61,7 @@ class StackdriverTransport extends Transport {
     }
   }
 
-  async log(info, callback) {
+  async log(info: logform.TransformableInfo, callback: winston.LogCallback) {
     try {
       await this.writeLog(info, callback);
     } catch (e) {
@@ -53,5 +69,3 @@ class StackdriverTransport extends Transport {
     }
   }
 }
-
-module.exports = StackdriverTransport;
