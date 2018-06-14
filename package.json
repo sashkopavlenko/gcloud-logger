@@ -2,8 +2,11 @@
   "name": "gcloud-logger",
   "version": "0.0.2",
   "description": "simple logger for gcp",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "prepublish": "npm run build",
+    "build": "tsc",
     "test": "jest"
   },
   "repository": {
@@ -23,19 +26,18 @@
   "homepage": "https://github.com/a-pavlenko/gcloud-logger#readme",
   "devDependencies": {
     "babel-eslint": "^8.2.3",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb": "^16.1.0",
-    "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.7.0",
     "husky": "^1.0.0-rc.1",
-    "lint-staged": "^7.1.0",
-    "prettier": "^1.12.1"
+    "lint-staged": "^7.2.0",
+    "prettier": "^1.13.5",
+    "prettier-tslint": "^0.4.0",
+    "tslint": "^5.10.0",
+    "tslint-config-airbnb": "^5.9.2",
+    "typescript": "^2.9.2"
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --write",
-      "eslint --fix",
+    "*.ts": [
+      "prettier-tslint fix",
+      "tslint --fix",
       "git add"
     ]
   },
@@ -50,7 +52,6 @@
   },
   "dependencies": {
     "@google-cloud/logging": "^1.2.0",
-    "winston": "^3.0.0-rc6",
-    "winston-transport": "^4.1.0"
+    "winston": "^3.0.0-rc6"
   }
 }
