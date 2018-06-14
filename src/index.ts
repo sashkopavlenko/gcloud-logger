@@ -16,6 +16,11 @@ interface Options {
 
 winston.addColors(colors);
 
+const preserveLevel = format((info: logform.TransformableInfo) => {
+  info.noncolorizedLevel = info.level;
+  return info;
+});
+
 function formatPrint(info: logform.TransformableInfo): string {
   const { level, message, timestamp, stack } = info;
   const msg = typeof message === 'object' ? util.inspect(message) : message;
@@ -23,6 +28,7 @@ function formatPrint(info: logform.TransformableInfo): string {
 }
 
 const formatter = format.combine(
+  preserveLevel(),
   format.colorize(),
   format.timestamp(),
   format.printf(formatPrint)
