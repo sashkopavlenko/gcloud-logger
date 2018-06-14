@@ -1,4 +1,5 @@
 import * as winston from 'winston';
+import * as logform from 'logform';
 import * as util from 'util';
 import TransportStackdriver from './transports/stackdriver';
 
@@ -15,7 +16,7 @@ interface Options {
 
 winston.addColors(colors);
 
-function formatPrint(info) {
+function formatPrint(info: logform.TransformableInfo): string {
   const { level, message, timestamp, stack } = info;
   const msg = typeof message === 'object' ? util.inspect(message) : message;
   return `${timestamp} ${level} ${stack || msg}`;
@@ -45,8 +46,8 @@ function createLogger(options: Options): winston.Logger {
   return winston.createLogger({
     levels,
     transports: getTransports(options),
-    level: 'debug',
     format: formatter,
+    level: 'debug',
     exitOnError: false,
   });
 }

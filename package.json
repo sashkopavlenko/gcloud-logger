@@ -32,7 +32,7 @@
     "prettier-tslint": "^0.4.0",
     "tslint": "^5.10.0",
     "tslint-config-airbnb": "^5.9.2",
-    "typescript": "^2.9.1"
+    "typescript": "^2.9.2"
   },
   "lint-staged": {
     "*.ts": [
@@ -52,7 +52,6 @@
   },
   "dependencies": {
     "@google-cloud/logging": "^1.2.0",
-    "winston": "^3.0.0-rc6",
-    "winston-transport": "^4.2.0"
+    "winston": "^3.0.0-rc6"
   }
 }
