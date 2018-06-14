@@ -36,12 +36,9 @@ export default class StackdriverTransport extends Transport {
   }
 
   prepareEntry(info: logform.TransformableInfo) {
-    console.log(Object.keys(info));
-    const { message, stack } = info;
-    const level = info[Symbol.for('level')];
+    const { message, stack, noncolorizedLevel: level } = info;
     const severity = severityLevels[level];
     const metadata = { severity, resource: { type: 'global' } };
-    console.log(info.level, severityLevels[info.level]);
 
     const payload = {
       serviceContext: { service: this.service },
