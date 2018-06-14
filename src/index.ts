@@ -58,4 +58,4 @@ function createLogger(options: Options): winston.Logger {
   });
 }
 
-export default { createLogger };
+export { createLogger };
