@@ -1,12 +1,12 @@
 # gcloud-logger
 
-# Installation
+## Installation
 
 ```bash
 npm install gcloud-logger
 ```
 
-# Example Usage
+## Example Usage
 
 ```js
 const gcloudLogger = require('gcloud-logger');
@@ -20,7 +20,7 @@ logger.debug('Debug');
 logger.error(new Error('Something went wrong'));
 ```
 
-# Levels
+## Levels
 
 Available logging levels and corresponding Stackdriver severity:
 
