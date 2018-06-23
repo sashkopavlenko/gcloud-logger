@@ -1,7 +1,7 @@
 import * as winston from 'winston';
 import * as Transport from 'winston-transport';
 import { TransformableInfo } from 'logform';
-import GcloudLogging, { Log, Entry } from '@google-cloud/logging';
+import Logging, { Log, Entry } from '@google-cloud/logging';
 
 interface StackdriverLogOptions {
   projectId: string;
@@ -34,7 +34,7 @@ export default class StackdriverTransport extends Transport {
     super(options);
     this.service = logName;
 
-    const logging = new GcloudLogging({ projectId });
+    const logging = new Logging({ projectId });
     this.logger = logging.log(logName);
   }
 
