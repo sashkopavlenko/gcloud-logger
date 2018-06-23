@@ -25,18 +25,20 @@ export default class StackdriverTransport extends Transport {
 
   constructor(
     options: Transport.TransportStreamOptions,
-    logOptions: StackdriverLogOptions
+    { projectId, logName }: StackdriverLogOptions
   ) {
     super(options);
-    const { projectId, logName } = logOptions;
     this.service = logName;
 
     const logging = new Logging({ projectId });
     this.logger = logging.log(logName);
   }
 
-  prepareEntry(info: logform.TransformableInfo) {
-    const { message, stack, noncolorizedLevel: level } = info;
+  prepareEntry({
+    message,
+    stack,
+    noncolorizedLevel: level,
+  }: logform.TransformableInfo) {
     const severity = severityLevels[level];
     const metadata = { severity, resource: { type: 'global' } };
 
