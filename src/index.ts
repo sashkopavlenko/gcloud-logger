@@ -21,8 +21,12 @@ const preserveLevel = format((info: logform.TransformableInfo) => {
   return info;
 });
 
-function formatPrint(info: logform.TransformableInfo): string {
-  const { level, message, timestamp, stack } = info;
+function formatPrint({
+  level,
+  message,
+  timestamp,
+  stack,
+}: logform.TransformableInfo): string {
   const msg = typeof message === 'object' ? util.inspect(message) : message;
   return `${timestamp} ${level} ${stack || msg}`;
 }
@@ -34,15 +38,15 @@ const formatter = format.combine(
   format.printf(formatPrint)
 );
 
-function getTransports(options: Options) {
+function getTransports({ console: consoleOutput, stackdriver }: Options) {
   const transports = [];
   const config = { handleExceptions: true };
-  if (options.console) {
+  if (consoleOutput) {
     transports.push(new winston.transports.Console(config));
   }
 
-  if (options.stackdriver) {
-    transports.push(new TransportStackdriver(config, options.stackdriver));
+  if (stackdriver) {
+    transports.push(new TransportStackdriver(config, stackdriver));
   }
 
   return transports;
