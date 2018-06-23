@@ -4,6 +4,7 @@
     "max-len": ["error", { "code": 80 }],
     "variable-name": ["allow-pascal-case"],
     "trailing-comma": [true, { "esSpecCompliant": true }],
-    "import-name": [false]
+    "import-name": [false],
+    "no-any": true
   }
 }
