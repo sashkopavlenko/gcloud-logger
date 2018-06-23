@@ -1,14 +1,20 @@
 import * as winston from 'winston';
 import * as Transport from 'winston-transport';
-import * as logform from 'logform';
+import { TransformableInfo } from 'logform';
 import * as Logging from '@google-cloud/logging';
+
+declare module '@google-cloud/logging';
 
 interface StackdriverLogOptions {
   projectId: string;
   logName: string;
 }
 
-const severityLevels = {
+interface severityLevels {
+  [key: string]: number;
+}
+
+const severityLevels: severityLevels = {
   debug: 100,
   info: 200,
   notice: 300,
@@ -38,7 +44,7 @@ export default class StackdriverTransport extends Transport {
     message,
     stack,
     noncolorizedLevel: level,
-  }: logform.TransformableInfo) {
+  }: TransformableInfo): Logging.entry {
     const severity = severityLevels[level];
     const metadata = { severity, resource: { type: 'global' } };
 
@@ -51,9 +57,9 @@ export default class StackdriverTransport extends Transport {
   }
 
   async writeLog(
-    info: logform.TransformableInfo,
+    info: TransformableInfo,
     callback: winston.LogCallback
-  ) {
+  ): Promise<void> {
     const entry = this.prepareEntry(info);
     await this.logger.write(entry);
     this.emit('logged', info);
@@ -63,7 +69,10 @@ export default class StackdriverTransport extends Transport {
     }
   }
 
-  async log(info: logform.TransformableInfo, callback: winston.LogCallback) {
+  async log(
+    info: TransformableInfo,
+    callback: winston.LogCallback
+  ): Promise<void> {
     try {
       await this.writeLog(info, callback);
     } catch (e) {

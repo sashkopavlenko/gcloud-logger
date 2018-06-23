@@ -3,6 +3,10 @@
     "outDir": "./dist",
     "declaration": true,
     "target": "es5",
-    "lib": ["ES2015"]
+    "lib": ["ES2015"],
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "strict": true,
+    "noUnusedLocals": true
   }
 }
