@@ -64,7 +64,6 @@ function formatPrint({
   timestamp,
   stack,
 }: TransformableInfo): string {
-  const msg: string =
-    typeof message === 'object' ? util.inspect(message) : message;
+  const msg = typeof message === 'object' ? util.inspect(message) : message;
   return `${timestamp} ${level} ${stack || msg}`;
 }
