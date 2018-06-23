@@ -1,9 +1,7 @@
 import * as winston from 'winston';
 import * as Transport from 'winston-transport';
 import { TransformableInfo } from 'logform';
-import * as Logging from '@google-cloud/logging';
-
-declare module '@google-cloud/logging';
+import GcloudLogging, { Log, Entry } from '@google-cloud/logging';
 
 interface StackdriverLogOptions {
   projectId: string;
@@ -27,7 +25,7 @@ const severityLevels: severityLevels = {
 
 export default class StackdriverTransport extends Transport {
   service: string;
-  logger: Logging;
+  logger: Log;
 
   constructor(
     options: Transport.TransportStreamOptions,
@@ -36,7 +34,7 @@ export default class StackdriverTransport extends Transport {
     super(options);
     this.service = logName;
 
-    const logging = new Logging({ projectId });
+    const logging = new GcloudLogging({ projectId });
     this.logger = logging.log(logName);
   }
 
@@ -44,7 +42,7 @@ export default class StackdriverTransport extends Transport {
     message,
     stack,
     noncolorizedLevel: level,
-  }: TransformableInfo): Logging.entry {
+  }: TransformableInfo): Entry {
     const severity = severityLevels[level];
     const metadata = { severity, resource: { type: 'global' } };
 
