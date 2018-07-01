@@ -1,5 +1,7 @@
 # gcloud-logger
 
+[![Build Status](https://travis-ci.com/a-pavlenko/gcloud-logger.svg?branch=master)](https://travis-ci.com/a-pavlenko/gcloud-logger)
+
 ## Installation
 
 ```bash
