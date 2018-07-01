@@ -1,4 +1,4 @@
-const { createLogger } = require('../src/index.ts');
+const { createLogger } = require('../dist');
 
 const severityLevels = {
   debug: 100,
