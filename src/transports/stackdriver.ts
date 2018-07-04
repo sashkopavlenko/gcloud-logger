@@ -1,7 +1,7 @@
 import * as winston from 'winston';
 import * as Transport from 'winston-transport';
 import { TransformableInfo } from 'logform';
-import Logging, { Log, Entry } from '@google-cloud/logging';
+import Logging = require('@google-cloud/logging');
 
 interface StackdriverLogOptions {
   projectId: string;
@@ -25,7 +25,8 @@ const severityLevels: severityLevels = {
 
 export default class StackdriverTransport extends Transport {
   service: string;
-  logger: Log;
+  entry: Function;
+  writeToStackdriver: Function;
 
   constructor(
     options: Transport.TransportStreamOptions,
@@ -35,14 +36,17 @@ export default class StackdriverTransport extends Transport {
     this.service = logName;
 
     const logging = new Logging({ projectId });
-    this.logger = logging.log(logName);
+    const logger = logging.log(logName);
+
+    this.writeToStackdriver = logger.write.bind(logger);
+    this.entry = logger.entry.bind(logger);
   }
 
   prepareEntry({
     message,
     stack,
     noncolorizedLevel: level,
-  }: TransformableInfo): Entry {
+  }: TransformableInfo): Object {
     const severity = severityLevels[level];
     const metadata = { severity, resource: { type: 'global' } };
 
@@ -51,7 +55,7 @@ export default class StackdriverTransport extends Transport {
       message: stack || message,
     };
 
-    return this.logger.entry(metadata, payload);
+    return this.entry(metadata, payload);
   }
 
   async writeLog(
@@ -59,7 +63,7 @@ export default class StackdriverTransport extends Transport {
     callback: winston.LogCallback
   ): Promise<void> {
     const entry = this.prepareEntry(info);
-    await this.logger.write(entry);
+    await this.writeToStackdriver(entry);
     this.emit('logged', info);
     callback();
     if (info.exception) {
