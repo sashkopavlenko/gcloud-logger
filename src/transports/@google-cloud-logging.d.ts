@@ -1,8 +1,8 @@
-declare module '@google-cloud/logging' {
-  interface LogConfig {
-    removeCircular: boolean;
-  }
+interface LogConfig {
+  removeCircular: boolean;
+}
 
+declare module '@google-cloud/logging/src/entry' {
   class Entry {
     metadata: object;
     data: object;
@@ -10,6 +10,13 @@ declare module '@google-cloud/logging' {
     constructor(data: object | string);
     toJSON(options?: LogConfig): {};
   }
+
+  export = Entry;
+}
+
+declare module '@google-cloud/logging/src/log' {
+  import Entry = require('@google-cloud/logging/src/entry');
+  import Logging = require('@google-cloud/logging');
 
   interface WriteOptions {
     gaxOptions: object;
@@ -83,6 +90,13 @@ declare module '@google-cloud/logging' {
     ): Promise<DeleteLogResponse>;
     delete(callback?: DeleteLogCallback): Promise<DeleteLogResponse>;
   }
+
+  export = Log;
+}
+
+declare module '@google-cloud/logging' {
+  import Log = require('@google-cloud/logging/src/log');
+  import Entry = require('@google-cloud/logging/src/entry');
 
   interface ClientConfig {
     projectId?: string;
