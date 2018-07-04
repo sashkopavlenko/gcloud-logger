@@ -3,7 +3,7 @@ declare module '@google-cloud/logging' {
     removeCircular: boolean;
   }
 
-  export class Entry {
+  class Entry {
     metadata: object;
     data: object;
     constructor(metadata: object | null | undefined, data: object | string);
@@ -25,7 +25,7 @@ declare module '@google-cloud/logging' {
 
   type EntryArg = Entry | Entry[];
 
-  export class Log {
+  class Log {
     constructor(logging: Logging, name: string, options: LogConfig);
     entry(
       resource: object | string | null | undefined,
@@ -97,7 +97,7 @@ declare module '@google-cloud/logging' {
     promise?: Function;
   }
 
-  export default class Logging {
+  class Logging {
     constructor(options: ClientConfig);
     log(name: string, options?: LogConfig): Log;
     entry(
@@ -105,4 +105,6 @@ declare module '@google-cloud/logging' {
       data: object | string
     ): Entry;
   }
+
+  export = Logging;
 }
