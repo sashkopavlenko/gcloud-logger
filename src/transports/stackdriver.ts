@@ -74,7 +74,8 @@ export default class StackdriverTransport extends Transport {
     try {
       await this.writeLog(info, callback);
     } catch (e) {
-      throw e;
+      console.log(e);
+      process.exit(1);
     }
   }
 }
