@@ -26,7 +26,8 @@ const severityLevels: severityLevels = {
 };
 
 export default class StackdriverTransport extends Transport {
-  service: string;
+  logName: string;
+  projectId: string;
   logger: Log;
 
   constructor(
@@ -34,10 +35,14 @@ export default class StackdriverTransport extends Transport {
     { projectId, logName }: StackdriverLogOptions
   ) {
     super(options);
-    this.service = logName;
+    this.logName = logName;
+    this.projectId = projectId;
+    this.logger = this.initLogger();
+  }
 
-    const logging = new Logging({ projectId });
-    this.logger = logging.log(logName);
+  initLogger() {
+    const logging = new Logging({ projectId: this.projectId });
+    return logging.log(this.logName);
   }
 
   prepareEntry({
@@ -49,7 +54,7 @@ export default class StackdriverTransport extends Transport {
     const metadata = { severity, resource: { type: 'global' } };
 
     const payload = {
-      serviceContext: { service: this.service },
+      serviceContext: { service: this.logName },
       message: stack || message,
     };
 
@@ -76,8 +81,18 @@ export default class StackdriverTransport extends Transport {
     try {
       await this.writeLog(info, callback);
     } catch (e) {
-      console.log(e);
-      process.exit(1);
+      this.errorHandler(e, callback);
     }
+  }
+
+  errorHandler(e: Error, callback: winston.LogCallback) {
+    this.logger = this.initLogger();
+    const info = {
+      level: 'error',
+      noncolorizedLevel: 'error',
+      stack: e.stack,
+      message: e.message,
+    };
+    this.log(info, callback);
   }
 }
