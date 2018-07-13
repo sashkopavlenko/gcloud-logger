@@ -1,4 +1,4 @@
-const { createLogger } = require('../src/index.ts');
+import { createLogger } from '../index';
 
 const severityLevels = {
   debug: 100,
@@ -17,9 +17,9 @@ describe('Logger', () => {
   });
 
   test('Create logger with empty options', () => {
-    const logger = createLogger({});
-    Object.keys(severityLevels).forEach((level) => {
-      expect(logger).toHaveProperty(level);
-    });
+    const logger = createLogger({ console: true });
+    Object.keys(severityLevels).forEach(level =>
+      expect(logger).toHaveProperty(level)
+    );
   });
 });
