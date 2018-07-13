@@ -1,25 +1,36 @@
 import { createLogger } from '../index';
 
-const severityLevels = {
-  debug: 100,
-  info: 200,
-  notice: 300,
-  warning: 400,
-  error: 500,
-  crit: 600,
-  alert: 700,
-  emerg: 800,
-};
-
-describe('Logger', () => {
+describe('Without options', () => {
   test('Create logger without options', () => {
     expect(createLogger).toThrow();
   });
+});
 
-  test('Create logger with empty options', () => {
-    const logger = createLogger({ console: true });
-    Object.keys(severityLevels).forEach(level =>
-      expect(logger).toHaveProperty(level)
-    );
+describe('Without transports', () => {
+  const logger = createLogger({ console: false });
+
+  test('Debug', () => {
+    expect(() => logger.debug('debug')).not.toThrow();
+  });
+  test('Info', () => {
+    expect(() => logger.debug('info')).not.toThrow();
+  });
+  test('Notice', () => {
+    expect(() => logger.debug('notice')).not.toThrow();
+  });
+  test('Warning', () => {
+    expect(() => logger.debug('warning')).not.toThrow();
+  });
+  test('Error', () => {
+    expect(() => logger.debug('error')).not.toThrow();
+  });
+  test('Crit', () => {
+    expect(() => logger.debug('crit')).not.toThrow();
+  });
+  test('Alert', () => {
+    expect(() => logger.debug('alert')).not.toThrow();
+  });
+  test('Emerg', () => {
+    expect(() => logger.debug('emerg')).not.toThrow();
   });
 });
