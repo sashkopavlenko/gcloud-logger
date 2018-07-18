@@ -1,36 +1,102 @@
 import { createLogger } from '../index';
 
-describe('Without options', () => {
-  test('Create logger without options', () => {
+describe('logger without options', () => {
+  test('logger throws an error', () => {
     expect(createLogger).toThrow();
   });
 });
 
-describe('Without transports', () => {
+describe('logger without transports', () => {
   const logger = createLogger({ console: false });
+  let output = '';
+  let expectedOutput = '';
 
-  test('Debug', () => {
-    expect(() => logger.debug('debug')).not.toThrow();
+  const error = '[winston] Attempt to write logs with no transports %j';
+  for (let i = 0; i < 8; i += 1) {
+    expectedOutput += error;
+  }
+  const consoleError = console.error;
+
+  beforeAll(() => {
+    console.error = jest.fn(message => {
+      output += message;
+    });
   });
-  test('Info', () => {
-    expect(() => logger.debug('info')).not.toThrow();
+
+  afterAll(() => {
+    console.error = consoleError;
   });
-  test('Notice', () => {
-    expect(() => logger.debug('notice')).not.toThrow();
+
+  test('error should be printed on attemt to write logs', () => {
+    logger.debug('debug');
+    logger.info('info');
+    logger.notice('notice');
+    logger.warning('warning');
+    logger.error('error');
+    logger.crit('crit');
+    logger.alert('alert');
+    logger.emerg('emerg');
+
+    expect(output).toMatch(expectedOutput);
   });
-  test('Warning', () => {
-    expect(() => logger.debug('warning')).not.toThrow();
+});
+
+describe('logger with output to console', () => {
+  const logger = createLogger({ console: true });
+
+  let errOutput = '';
+  let output = '';
+  const processStdErrWrite = process.stderr.write;
+  const processStdOutWrite = process.stdout.write;
+
+  beforeAll(() => {
+    process.stderr.write = jest.fn(message => {
+      errOutput = message;
+    });
+    process.stdout.write = jest.fn(message => {
+      output = message;
+    });
   });
-  test('Error', () => {
-    expect(() => logger.debug('error')).not.toThrow();
+
+  beforeEach(() => {
+    output = '';
   });
-  test('Crit', () => {
-    expect(() => logger.debug('crit')).not.toThrow();
+
+  afterAll(() => {
+    process.stderr.write = processStdErrWrite;
+    process.stdout.write = processStdOutWrite;
   });
-  test('Alert', () => {
-    expect(() => logger.debug('alert')).not.toThrow();
+
+  test('log debug', () => {
+    logger.debug('debug');
+    expect(errOutput).toMatch(/debug/);
   });
-  test('Emerg', () => {
-    expect(() => logger.debug('emerg')).not.toThrow();
+  test('log info', () => {
+    logger.info('info');
+    expect(output).toMatch(/info/);
+  });
+  test('log notice', () => {
+    logger.notice('notice');
+    expect(output).toMatch(/notice/);
+  });
+  test('log warning', () => {
+    logger.warning('warning');
+    expect(output).toMatch(/warning/);
+  });
+  test('log error', () => {
+    logger.error('error');
+    expect(errOutput).toMatch(/error/);
+  });
+  test('log crit', () => {
+    logger.crit('crit');
+    expect(output).toMatch(/crit/);
+  });
+  test('log alert', () => {
+    logger.alert('alert');
+    expect(output).toMatch(/alert/);
+  });
+  test('log emerg', () => {
+    logger.emerg('emerg');
+    expect(output).toMatch(/emerg/);
   });
 });

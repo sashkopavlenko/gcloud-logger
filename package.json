@@ -25,14 +25,14 @@
   },
   "homepage": "https://github.com/a-pavlenko/gcloud-logger#readme",
   "devDependencies": {
-    "@types/jest": "^23.1.5",
+    "@types/jest": "^23.3.0",
     "husky": "^1.0.0-rc.1",
     "jest": "^23.4.1",
     "lint-staged": "^7.2.0",
     "prettier": "^1.13.7",
     "prettier-tslint": "^0.4.0",
-    "ts-jest": "^23.0.0",
-    "tslint": "^5.10.0",
+    "ts-jest": "^23.0.1",
+    "tslint": "^5.11.0",
     "tslint-config-airbnb": "^5.9.2",
     "typescript": "^2.9.2"
   },

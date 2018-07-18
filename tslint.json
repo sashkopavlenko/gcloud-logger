@@ -5,6 +5,7 @@
     "variable-name": ["allow-pascal-case"],
     "trailing-comma": [true, { "esSpecCompliant": true }],
     "import-name": [false],
-    "no-any": true
+    "no-any": true,
+    "ter-arrow-parens": [false]
   }
 }
