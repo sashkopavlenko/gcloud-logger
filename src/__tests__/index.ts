@@ -15,19 +15,13 @@ describe('logger without transports', () => {
   for (let i = 0; i < 8; i += 1) {
     expectedOutput += error;
   }
-  const consoleError = console.error;
-
-  beforeAll(() => {
-    console.error = jest.fn(message => {
-      output += message;
-    });
-  });
-
-  afterAll(() => {
-    console.error = consoleError;
-  });
 
   test('error should be printed on attemt to write logs', () => {
+    const consoleErrorMock = jest.spyOn(console, 'error');
+    consoleErrorMock.mockImplementation(message => {
+      output += message;
+    });
+
     logger.debug('debug');
     logger.info('info');
     logger.notice('notice');
@@ -37,6 +31,7 @@ describe('logger without transports', () => {
     logger.alert('alert');
     logger.emerg('emerg');
 
+    consoleErrorMock.mockRestore();
     expect(output).toMatch(expectedOutput);
   });
 });
@@ -46,25 +41,29 @@ describe('logger with output to console', () => {
 
   let errOutput = '';
   let output = '';
-  const processStdErrWrite = process.stderr.write;
-  const processStdOutWrite = process.stdout.write;
+  let processStdErrWriteMock: jest.SpyInstance;
+  let processStdOutWriteMock: jest.SpyInstance;
 
   beforeAll(() => {
-    process.stderr.write = jest.fn(message => {
+    processStdErrWriteMock = jest.spyOn(process.stderr, 'write');
+    processStdErrWriteMock.mockImplementation(message => {
       errOutput = message;
     });
-    process.stdout.write = jest.fn(message => {
+
+    processStdOutWriteMock = jest.spyOn(process.stdout, 'write');
+    processStdOutWriteMock.mockImplementation(message => {
       output = message;
     });
   });
 
   beforeEach(() => {
     output = '';
+    errOutput = '';
   });
 
   afterAll(() => {
-    process.stderr.write = processStdErrWrite;
-    process.stdout.write = processStdOutWrite;
+    processStdErrWriteMock.mockRestore();
+    processStdOutWriteMock.mockRestore();
   });
 
   test('log debug', () => {
