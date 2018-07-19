@@ -19,7 +19,7 @@ Configuration is simple and consists of next params:
 - `console` - writing logs to stdout or stderr which depends on level;
 - `stackdriver` - sending logs to Stackdriver. Note: application must have access to your GCP project and permission to write logs.
 
-You can omit any of this property or set the value to falsy if it's not needed.
+You can omit any of these properties or set the value to falsy if it's not needed.
 
 ```js
 const gcloudLogger = require('gcloud-logger');
