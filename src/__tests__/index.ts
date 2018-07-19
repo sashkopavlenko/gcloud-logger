@@ -1,7 +1,8 @@
 import { createLogger } from '../index';
+import Log = require('@google-cloud/logging/src/log');
 
 describe('logger without options', () => {
-  test('logger throws an error', () => {
+  test('logger should throw an error', () => {
     expect(createLogger).toThrow();
   });
 });
@@ -16,7 +17,7 @@ describe('logger without transports', () => {
     expectedOutput += error;
   }
 
-  test('error should be printed on attemt to write logs', () => {
+  test('should print an error on attemt to write logs', () => {
     const consoleErrorMock = jest.spyOn(console, 'error');
     consoleErrorMock.mockImplementation(message => {
       output += message;
@@ -66,36 +67,159 @@ describe('logger with output to console', () => {
     processStdOutWriteMock.mockRestore();
   });
 
-  test('log debug', () => {
+  test('should log debug string', () => {
     logger.debug('debug');
     expect(errOutput).toMatch(/debug/);
   });
-  test('log info', () => {
+
+  test('should log debug error', () => {
+    logger.debug(new Error('debug'));
+    expect(errOutput).toMatch(/Error: debug/);
+  });
+
+  test('should log debug object', () => {
+    logger.debug({ testProp: 'testValue' });
+    expect(errOutput).toMatch(/{ testProp: 'testValue' }/);
+  });
+
+  test('should log info', () => {
     logger.info('info');
     expect(output).toMatch(/info/);
   });
-  test('log notice', () => {
+
+  test('should log notice', () => {
     logger.notice('notice');
     expect(output).toMatch(/notice/);
   });
-  test('log warning', () => {
+
+  test('should log warning', () => {
     logger.warning('warning');
     expect(output).toMatch(/warning/);
   });
-  test('log error', () => {
+
+  test('should log error', () => {
     logger.error('error');
     expect(errOutput).toMatch(/error/);
   });
-  test('log crit', () => {
+
+  test('should log crit', () => {
     logger.crit('crit');
     expect(output).toMatch(/crit/);
   });
-  test('log alert', () => {
+
+  test('should log alert', () => {
     logger.alert('alert');
     expect(output).toMatch(/alert/);
   });
-  test('log emerg', () => {
+
+  test('should log emerg', () => {
     logger.emerg('emerg');
     expect(output).toMatch(/emerg/);
   });
 });
+
+describe('logger with output to stackdriver', () => {
+  const logger = createLogger({
+    console: false,
+    stackdriver: { projectId: 'test', logName: 'test' },
+  });
+
+  let output = '';
+  let logWriteMock: jest.SpyInstance;
+
+  beforeAll(() => {
+    logWriteMock = jest.spyOn(Log.prototype, 'write');
+    logWriteMock.mockImplementation(({ data }) => {
+      output = data.message;
+    });
+  });
+
+  beforeEach(() => {
+    output = '';
+  });
+
+  afterAll(() => {
+    logWriteMock.mockRestore();
+  });
+
+  test('should log debug', () => {
+    logger.debug('debug');
+    expect(output).toMatch('debug');
+  });
+
+  test('should log info', () => {
+    logger.info('info');
+    expect(output).toMatch(/info/);
+  });
+
+  test('should log notice', () => {
+    logger.notice('notice');
+    expect(output).toMatch(/notice/);
+  });
+
+  test('should log warning', () => {
+    logger.warning('warning');
+    expect(output).toMatch(/warning/);
+  });
+
+  test('should log error', () => {
+    logger.error('error');
+    expect(output).toMatch(/error/);
+  });
+
+  test('should log crit', () => {
+    logger.crit('crit');
+    expect(output).toMatch(/crit/);
+  });
+
+  test('should log alert', () => {
+    logger.alert('alert');
+    expect(output).toMatch(/alert/);
+  });
+
+  test('should log emerg', () => {
+    logger.emerg('emerg');
+    expect(output).toMatch(/emerg/);
+  });
+
+  test('should log exception', done => {
+    const processExitMock = jest.spyOn(process, 'exit');
+    processExitMock.mockImplementation(() => {
+      expect(output).toMatch(/TypeError: TestException/);
+      processExitMock.mockRestore();
+      done();
+    });
+    logger.debug(new Exception('TestException'));
+  });
+
+  test('should exit on exception', done => {
+    const processExitMock = jest.spyOn(process, 'exit');
+    processExitMock.mockImplementation(() => {
+      expect(processExitMock.mock.calls.length).toBe(1);
+      processExitMock.mockRestore();
+      done();
+    });
+    logger.debug(new Exception('TestException'));
+  });
+
+  test('should log an error occured while sending to stackdriver', done => {
+    logWriteMock
+      .mockImplementationOnce(() => {
+        throw new Error('Test');
+      })
+      .mockImplementationOnce(({ data }) => {
+        output = data.message;
+        expect(output).toMatch(/Error: Test/);
+        done();
+      });
+    logger.debug('debug');
+  });
+});
+
+class Exception extends TypeError {
+  exception: boolean;
+  constructor(message: string) {
+    super(message);
+    this.exception = true;
+  }
+}
