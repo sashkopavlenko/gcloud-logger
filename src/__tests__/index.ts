@@ -17,7 +17,7 @@ describe('logger without transports', () => {
     expectedOutput += error;
   }
 
-  test('should print an error on attemt to write logs', () => {
+  test('should print an error on attempt to write logs', () => {
     const consoleErrorMock = jest.spyOn(console, 'error');
     consoleErrorMock.mockImplementation(message => {
       output += message;
