@@ -1,20 +1,18 @@
 import * as winston from 'winston';
 import * as Transport from 'winston-transport';
 import { TransformableInfo } from 'logform';
-import Logging = require('@google-cloud/logging');
-import Log = require('@google-cloud/logging/src/log');
-import Entry = require('@google-cloud/logging/src/entry');
+import { Logging, Log, Entry } from '@google-cloud/logging';
 
 interface StackdriverLogOptions {
   projectId: string;
   logName: string;
 }
 
-interface severityLevels {
+interface SeverityLevels {
   [key: string]: number;
 }
 
-const severityLevels: severityLevels = {
+const severityLevels: SeverityLevels = {
   debug: 100,
   info: 200,
   notice: 300,

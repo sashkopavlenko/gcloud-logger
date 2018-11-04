@@ -1,5 +1,5 @@
 import { createLogger } from '../index';
-import Log = require('@google-cloud/logging/src/log');
+import { Log } from '@google-cloud/logging';
 
 describe('logger without options', () => {
   test('logger should throw an error', () => {
@@ -40,17 +40,10 @@ describe('logger without transports', () => {
 describe('logger with output to console', () => {
   const logger = createLogger({ console: true });
 
-  let errOutput = '';
   let output = '';
-  let processStdErrWriteMock: jest.SpyInstance;
   let processStdOutWriteMock: jest.SpyInstance;
 
   beforeAll(() => {
-    processStdErrWriteMock = jest.spyOn(process.stderr, 'write');
-    processStdErrWriteMock.mockImplementation(message => {
-      errOutput = message;
-    });
-
     processStdOutWriteMock = jest.spyOn(process.stdout, 'write');
     processStdOutWriteMock.mockImplementation(message => {
       output = message;
@@ -59,27 +52,25 @@ describe('logger with output to console', () => {
 
   beforeEach(() => {
     output = '';
-    errOutput = '';
   });
 
   afterAll(() => {
-    processStdErrWriteMock.mockRestore();
     processStdOutWriteMock.mockRestore();
   });
 
   test('should log debug string', () => {
     logger.debug('debug');
-    expect(errOutput).toMatch(/debug/);
+    expect(output).toMatch(/debug/);
   });
 
   test('should log debug error', () => {
     logger.debug(new Error('debug'));
-    expect(errOutput).toMatch(/Error: debug/);
+    expect(output).toMatch(/Error: debug/);
   });
 
   test('should log debug object', () => {
     logger.debug({ testProp: 'testValue' });
-    expect(errOutput).toMatch(/{ testProp: 'testValue' }/);
+    expect(output).toMatch(/{ testProp: 'testValue' }/);
   });
 
   test('should log info', () => {
@@ -99,7 +90,6 @@ describe('logger with output to console', () => {
 
   test('should log error', () => {
     logger.error('error');
-    expect(errOutput).toMatch(/error/);
   });
 
   test('should log crit', () => {
