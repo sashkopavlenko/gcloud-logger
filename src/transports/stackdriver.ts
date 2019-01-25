@@ -40,7 +40,7 @@ export default class StackdriverTransport extends Transport {
 
   initLogger() {
     const logging = new Logging({ projectId: this.projectId });
-    return logging.log(this.logName);
+    return logging.log(this.logName, { removeCircular: true });
   }
 
   prepareEntry({
