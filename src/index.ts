@@ -29,6 +29,7 @@ export function createLogger(options: Options): winston.Logger {
 
 function getFormat(): Format {
   return format.combine(
+    format.splat(),
     format(preserveLevel)(),
     format.colorize(),
     format.timestamp(),
@@ -58,12 +59,46 @@ function preserveLevel(info: TransformableInfo): TransformableInfo {
   return info;
 }
 
-function formatPrint({
-  level,
-  message,
-  timestamp,
-  stack,
-}: TransformableInfo): string {
+function formatPrint(info: TransformableInfo): string {
+  const { level, message, timestamp, stack, meta } = info;
   const msg = typeof message === 'object' ? util.inspect(message) : message;
-  return `${timestamp} ${level} ${stack || msg}`;
+  const additionalArguments = formatAdditionalArguments(meta);
+  return `${timestamp} ${level} ${stack || msg}${additionalArguments}`;
 }
+
+function formatAdditionalArguments(meta: []) {
+  if (!meta || !meta.length) {
+    return '';
+  }
+
+  const additionalArguments = meta.map(<T>(arg: T) => {
+    if (arg instanceof Error) {
+      return arg.stack;
+    }
+
+    if (typeof arg === 'object') {
+      return JSON.stringify(arg, getCircularReplacer());
+    }
+
+    if (!arg) {
+      return String(arg);
+    }
+
+    return arg;
+  });
+
+  return ` ${additionalArguments.join(' ')}`;
+}
+
+const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (_key: string, value: object) => {
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return '[Circular]';
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
