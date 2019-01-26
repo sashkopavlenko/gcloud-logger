@@ -70,7 +70,7 @@ describe('logger with output to console', () => {
 
   test('should log debug object', () => {
     logger.debug({ testProp: 'testValue' });
-    expect(output).toMatch(/{ testProp: 'testValue' }/);
+    expect(output).toMatch(/{ testProp: .*'testValue'.* }/);
   });
 
   test('should log info', () => {
@@ -110,7 +110,7 @@ describe('logger with output to console', () => {
   test('should log emerg multiple arguments', () => {
     logger.emerg('emerg', 'second', 'third', new Error('test err'));
     expect(output).toMatch(
-      /emerg second third Error: test err\n    at Object.test/
+      /emerg .*second.*third.*Error: test err\n    at Object.test/
     );
   });
 });
