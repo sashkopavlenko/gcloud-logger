@@ -69,7 +69,7 @@ function formatPrint(info: TransformableInfo): string {
   return `${timestamp} ${level} ${stack || msg}${additionalArguments}`;
 }
 
-function formatAdditionalArguments(meta: []) {
+function formatAdditionalArguments(meta: [] | undefined) {
   if (!meta || !meta.length) {
     return '';
   }
