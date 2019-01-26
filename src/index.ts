@@ -61,7 +61,10 @@ function preserveLevel(info: TransformableInfo): TransformableInfo {
 
 function formatPrint(info: TransformableInfo): string {
   const { level, message, timestamp, stack, meta } = info;
-  const msg = typeof message === 'object' ? util.inspect(message) : message;
+  const msg =
+    typeof message === 'object'
+      ? util.inspect(message, { colors: true })
+      : message;
   const additionalArguments = formatAdditionalArguments(meta);
   return `${timestamp} ${level} ${stack || msg}${additionalArguments}`;
 }
@@ -76,29 +79,8 @@ function formatAdditionalArguments(meta: []) {
       return arg.stack;
     }
 
-    if (typeof arg === 'object') {
-      return JSON.stringify(arg, getCircularReplacer());
-    }
-
-    if (!arg) {
-      return String(arg);
-    }
-
-    return arg;
+    return util.inspect(arg, { colors: true });
   });
 
   return ` ${additionalArguments.join(' ')}`;
 }
-
-const getCircularReplacer = () => {
-  const seen = new WeakSet();
-  return (_key: string, value: object) => {
-    if (typeof value === 'object' && value !== null) {
-      if (seen.has(value)) {
-        return '[Circular]';
-      }
-      seen.add(value);
-    }
-    return value;
-  };
-};
