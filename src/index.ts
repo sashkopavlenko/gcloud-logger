@@ -1,7 +1,8 @@
 import * as winston from 'winston';
 import * as Transport from 'winston-transport';
-import { Format, TransformableInfo } from 'logform';
+import { Format, TransformableInfo, TransformFunction } from 'logform';
 import * as util from 'util';
+import { SPLAT } from 'triple-beam';
 import TransportStackdriver from './transports/stackdriver';
 
 const { format } = winston;
@@ -21,20 +22,10 @@ export function createLogger(options: Options): winston.Logger {
   return winston.createLogger({
     levels,
     transports: getTransports(options),
-    format: getFormat(),
+    format: format.combine(format(preserveStack)()),
     level: 'debug',
     exitOnError: false,
   });
-}
-
-function getFormat(): Format {
-  return format.combine(
-    format.splat(),
-    format(preserveLevel)(),
-    format.colorize(),
-    format.timestamp(),
-    format.printf(formatPrint)
-  );
 }
 
 function getTransports({
@@ -43,44 +34,59 @@ function getTransports({
 }: Options): Transport[] {
   const transports: Transport[] = [];
   const config: Transport.TransportStreamOptions = { handleExceptions: true };
+
   if (consoleOutput) {
-    transports.push(new winston.transports.Console(config));
+    transports.push(
+      new winston.transports.Console({ ...config, format: getConsoleFormat() })
+    );
   }
 
   if (stackdriver) {
-    transports.push(new TransportStackdriver(config, stackdriver));
+    transports.push(
+      new TransportStackdriver(
+        { ...config, format: format.combine(format(preserveSplat(false))()) },
+        stackdriver
+      )
+    );
   }
-
   return transports;
 }
 
-function preserveLevel(info: TransformableInfo): TransformableInfo {
-  info.noncolorizedLevel = info.level;
-  return info;
+function getConsoleFormat(): Format {
+  return format.combine(
+    format.colorize(),
+    format.timestamp(),
+    format(preserveSplat(true))(),
+    format.printf(formatPrint)
+  );
+}
+
+function preserveSplat(colors: boolean): TransformFunction {
+  return (info: TransformableInfo): TransformableInfo => {
+    info.preservedSplat = info[SPLAT]
+      ? info[SPLAT].map(<T>(a: T) => util.inspect(a, { colors }))
+      : [''];
+    return info;
+  };
 }
 
 function formatPrint(info: TransformableInfo): string {
-  const { level, message, timestamp, stack, meta } = info;
+  const { level, message, timestamp, preservedStack, preservedSplat } = info;
+
   const msg =
     typeof message === 'object'
       ? util.inspect(message, { colors: true })
       : message;
-  const additionalArguments = formatAdditionalArguments(meta);
-  return `${timestamp} ${level} ${stack || msg}${additionalArguments}`;
+
+  return util.format(
+    timestamp,
+    level,
+    preservedStack || msg,
+    ...preservedSplat
+  );
 }
 
-function formatAdditionalArguments(meta: [] | undefined) {
-  if (!meta || !meta.length) {
-    return '';
-  }
-
-  const additionalArguments = meta.map(<T>(arg: T) => {
-    if (arg instanceof Error) {
-      return arg.stack;
-    }
-
-    return util.inspect(arg, { colors: true });
-  });
-
-  return ` ${additionalArguments.join(' ')}`;
+function preserveStack(info: TransformableInfo): TransformableInfo {
+  info.preservedStack = info.stack;
+  return info;
 }
