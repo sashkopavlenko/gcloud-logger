@@ -211,6 +211,13 @@ describe('logger with output to stackdriver', () => {
       });
     logger.debug('debug');
   });
+
+  test('should log emerg multiple arguments to stackdriver', () => {
+    logger.emerg('emerg', 'second', 'third', new Error('test err'));
+    expect(output).toMatch(
+      /emerg .*second.*third.*Error: test err\n    at Object.test/
+    );
+  });
 });
 
 class Exception extends TypeError {

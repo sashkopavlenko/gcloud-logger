@@ -1,3 +1,4 @@
+import * as util from 'util';
 import * as winston from 'winston';
 import * as Transport from 'winston-transport';
 import { TransformableInfo } from 'logform';
@@ -43,17 +44,14 @@ export default class StackdriverTransport extends Transport {
     return logging.log(this.logName, { removeCircular: true });
   }
 
-  prepareEntry({
-    message,
-    stack,
-    noncolorizedLevel: level,
-  }: TransformableInfo): Entry {
+  prepareEntry(info: TransformableInfo): Entry {
+    const { message, preservedStack, level, preservedSplat } = info;
     const severity = severityLevels[level];
     const metadata = { severity, resource: { type: 'global' } };
 
     const payload = {
       serviceContext: { service: this.logName },
-      message: stack || message,
+      message: util.format(preservedStack || message, ...preservedSplat),
     };
 
     return this.logger.entry(metadata, payload);
@@ -88,8 +86,9 @@ export default class StackdriverTransport extends Transport {
     const info = {
       level: 'error',
       noncolorizedLevel: 'error',
-      stack: e.stack,
       message: e.message,
+      preservedStack: e.stack,
+      preservedSplat: [''],
     };
     this.log(info, callback);
   }
