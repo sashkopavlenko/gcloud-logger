@@ -10,7 +10,7 @@ interface StackdriverLogOptions {
 }
 
 interface SeverityLevels {
-  [key: string]: number;
+  readonly [key: string]: number;
 }
 
 const severityLevels: SeverityLevels = {
