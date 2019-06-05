@@ -180,22 +180,24 @@ describe('logger with output to stackdriver', () => {
   });
 
   test('should log exception', done => {
-    const processExitMock = jest.spyOn(process, 'exit');
-    processExitMock.mockImplementation(() => {
-      expect(output).toMatch(/TypeError: TestException/);
-      processExitMock.mockRestore();
-      done();
-    });
+    const processExitMock = jest
+      .spyOn(process, 'exit')
+      .mockImplementation(() => {
+        expect(output).toMatch(/TypeError: TestException/);
+        processExitMock.mockRestore();
+        throw done();
+      });
     logger.debug(new Exception('TestException'));
   });
 
   test('should exit on exception', done => {
-    const processExitMock = jest.spyOn(process, 'exit');
-    processExitMock.mockImplementation(() => {
-      expect(processExitMock.mock.calls.length).toBe(1);
-      processExitMock.mockRestore();
-      done();
-    });
+    const processExitMock = jest
+      .spyOn(process, 'exit')
+      .mockImplementation(() => {
+        expect(processExitMock.mock.calls.length).toBe(1);
+        processExitMock.mockRestore();
+        throw done();
+      });
     logger.debug(new Exception('TestException'));
   });
 
