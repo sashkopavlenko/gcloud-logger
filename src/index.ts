@@ -1,8 +1,8 @@
+import { Format, TransformableInfo, TransformFunction } from 'logform';
+import { SPLAT } from 'triple-beam';
+import * as util from 'util';
 import * as winston from 'winston';
 import * as Transport from 'winston-transport';
-import { Format, TransformableInfo, TransformFunction } from 'logform';
-import * as util from 'util';
-import { SPLAT } from 'triple-beam';
 import TransportStackdriver from './transports/stackdriver';
 
 const { format } = winston;

@@ -1,8 +1,8 @@
 {
   "extends": "tslint-config-airbnb",
   "rules": {
-    "max-len": ["error", { "code": 80 }],
-    "variable-name": ["allow-pascal-case"],
+    "max-line-length": [true, 80],
+    "variable-name": { "options": ["allow-pascal-case"] },
     "trailing-comma": [true, { "esSpecCompliant": true }],
     "import-name": [false],
     "no-any": true,
