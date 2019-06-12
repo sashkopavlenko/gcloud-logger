@@ -37,7 +37,7 @@ function getTransports({
 
   if (consoleOutput) {
     transports.push(
-      new winston.transports.Console({ ...config, format: getConsoleFormat() })
+      new winston.transports.Console({ ...config, format: getConsoleFormat() }),
     );
   }
 
@@ -45,8 +45,8 @@ function getTransports({
     transports.push(
       new TransportStackdriver(
         { ...config, format: format.combine(format(preserveSplat(false))()) },
-        stackdriver
-      )
+        stackdriver,
+      ),
     );
   }
   return transports;
@@ -57,36 +57,38 @@ function getConsoleFormat(): Format {
     format.colorize(),
     format.timestamp(),
     format(preserveSplat(true))(),
-    format.printf(formatPrint)
+    format.printf(formatPrint),
   );
 }
 
-function preserveSplat(colors: boolean): TransformFunction {
+function preserveSplat(colorized: boolean): TransformFunction {
   return (info: TransformableInfo): TransformableInfo => {
-    info.preservedSplat = info[SPLAT]
-      ? info[SPLAT].map(<T>(a: T) => util.inspect(a, { colors }))
+    const preservedSplat = info[SPLAT]
+      ? info[SPLAT].map(<T>(a: T) => util.inspect(a, { colors: colorized }))
       : [''];
-    return info;
+
+    return { ...info, preservedSplat };
   };
 }
 
 function formatPrint(info: TransformableInfo): string {
-  const { level, message, timestamp, preservedStack, preservedSplat } = info;
+  const {
+    level, message, timestamp, preservedStack, preservedSplat,
+  } = info;
 
-  const msg =
-    typeof message === 'object'
-      ? util.inspect(message, { colors: true })
-      : message;
+  const msg = typeof message === 'object'
+    ? util.inspect(message, { colors: true })
+    : message;
 
   return util.format(
     timestamp,
     level,
     preservedStack || msg,
-    ...preservedSplat
+    ...preservedSplat,
   );
 }
 
 function preserveStack(info: TransformableInfo): TransformableInfo {
-  info.preservedStack = info.stack;
-  return info;
+  const preservedStack = info.stack;
+  return { ...info, preservedStack };
 }

@@ -1,4 +1,3 @@
 declare module 'triple-beam' {
-  const SPLAT: string;
-  export { SPLAT };
+  export const SPLAT: string;
 }

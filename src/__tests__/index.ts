@@ -1,5 +1,14 @@
-import { createLogger } from '../index';
 import { Log } from '@google-cloud/logging';
+import { createLogger } from '../index';
+
+class Exception extends TypeError {
+  exception: boolean;
+
+  constructor(message: string) {
+    super(message);
+    this.exception = true;
+  }
+}
 
 describe('logger without options', () => {
   test('logger should throw an error', () => {
@@ -110,7 +119,7 @@ describe('logger with output to console', () => {
   test('should log emerg multiple arguments', () => {
     logger.emerg('emerg', 'second', 'third', new Error('test err'));
     expect(output).toMatch(
-      /emerg .*second.*third.*Error: test err\n    at Object.test/
+      /emerg .*second.*third.*Error: test err\n {4}at Object.test/,
     );
   });
 });
@@ -217,15 +226,7 @@ describe('logger with output to stackdriver', () => {
   test('should log emerg multiple arguments to stackdriver', () => {
     logger.emerg('emerg', 'second', 'third', new Error('test err'));
     expect(output).toMatch(
-      /emerg .*second.*third.*Error: test err\n    at Object.test/
+      /emerg .*second.*third.*Error: test err\n {4}at Object.test/,
     );
   });
 });
-
-class Exception extends TypeError {
-  exception: boolean;
-  constructor(message: string) {
-    super(message);
-    this.exception = true;
-  }
-}
