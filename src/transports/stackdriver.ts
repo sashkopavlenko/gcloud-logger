@@ -26,12 +26,14 @@ const severityLevels: SeverityLevels = {
 
 export default class StackdriverTransport extends Transport {
   logName: string;
+
   projectId: string;
+
   logger: Log;
 
   constructor(
     options: Transport.TransportStreamOptions,
-    { projectId, logName }: StackdriverLogOptions
+    { projectId, logName }: StackdriverLogOptions,
   ) {
     super(options);
     this.logName = logName;
@@ -45,7 +47,9 @@ export default class StackdriverTransport extends Transport {
   }
 
   prepareEntry(info: TransformableInfo): Entry {
-    const { message, preservedStack, level, preservedSplat } = info;
+    const {
+      message, preservedStack, level, preservedSplat,
+    } = info;
     const severity = severityLevels[level];
     const metadata = { severity, resource: { type: 'global' } };
 
@@ -59,7 +63,7 @@ export default class StackdriverTransport extends Transport {
 
   async writeLog(
     info: TransformableInfo,
-    callback: winston.LogCallback
+    callback: winston.LogCallback,
   ): Promise<void> {
     const entry = this.prepareEntry(info);
     await this.logger.write(entry);
@@ -72,7 +76,7 @@ export default class StackdriverTransport extends Transport {
 
   async log(
     info: TransformableInfo,
-    callback: winston.LogCallback
+    callback: winston.LogCallback,
   ): Promise<void> {
     try {
       await this.writeLog(info, callback);
