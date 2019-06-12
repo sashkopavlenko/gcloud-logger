@@ -44,8 +44,8 @@
   },
   "lint-staged": {
     "*.ts": [
-      "prettier-tslint fix",
-      "tslint --fix",
+      "prettier fix",
+      "eslint --fix",
       "git add"
     ]
   },
