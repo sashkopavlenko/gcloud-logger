@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/a-pavlenko/gcloud-logger.svg?branch=master)](https://travis-ci.com/a-pavlenko/gcloud-logger)
 
-Simple logger wrapper for GCP with winston under the hood.
+A simple logger wrapper for GCP with winston under the hood.
 
 ## Installation
 
