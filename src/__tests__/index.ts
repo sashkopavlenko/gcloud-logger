@@ -119,7 +119,7 @@ describe('logger with output to console', () => {
   test('should log emerg multiple arguments', () => {
     logger.emerg('emerg', 'second', 'third', new Error('test err'));
     expect(output).toMatch(
-      /emerg .*second.*third.*Error: test err\n {4}at Object.test/,
+      /emerg .*second.*third.*Error: test err\n {4}at Object.test/
     );
   });
 });
@@ -226,7 +226,7 @@ describe('logger with output to stackdriver', () => {
   test('should log emerg multiple arguments to stackdriver', () => {
     logger.emerg('emerg', 'second', 'third', new Error('test err'));
     expect(output).toMatch(
-      /emerg .*second.*third.*Error: test err\n {4}at Object.test/,
+      /emerg .*second.*third.*Error: test err\n {4}at Object.test/
     );
   });
 });
