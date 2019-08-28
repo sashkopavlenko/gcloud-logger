@@ -1,6 +1,9 @@
 import { Log } from '@google-cloud/logging';
 import { createLogger } from '../index';
 
+const exitMock = jest.fn();
+Object.defineProperty(process, 'exit', { value: exitMock });
+
 class Exception extends TypeError {
   exception: boolean;
 
@@ -141,6 +144,7 @@ describe('logger with output to stackdriver', () => {
   });
 
   beforeEach(() => {
+    exitMock.mockClear();
     output = '';
   });
 
@@ -188,26 +192,14 @@ describe('logger with output to stackdriver', () => {
     expect(output).toMatch(/emerg/);
   });
 
-  test('should log exception', done => {
-    const processExitMock = jest
-      .spyOn(process, 'exit')
-      .mockImplementation(() => {
-        expect(output).toMatch(/TypeError: TestException/);
-        processExitMock.mockRestore();
-        throw done();
-      });
+  test('should log exception', () => {
     logger.debug(new Exception('TestException'));
+    expect(output).toMatch(/TypeError: TestException/);
   });
 
-  test('should exit on exception', done => {
-    const processExitMock = jest
-      .spyOn(process, 'exit')
-      .mockImplementation(() => {
-        expect(processExitMock.mock.calls.length).toBe(1);
-        processExitMock.mockRestore();
-        throw done();
-      });
-    logger.debug(new Exception('TestException'));
+  test('should exit on exception', async () => {
+    await logger.debug(new Exception('TestException'));
+    expect(exitMock).toHaveBeenCalledTimes(1);
   });
 
   test('should log an error occured while sending to stackdriver', done => {
