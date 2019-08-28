@@ -65,7 +65,26 @@
     "winston-transport": "^4.3.0"
   },
   "jest": {
-    "preset": "ts-jest"
+    "moduleFileExtensions": [
+      "ts",
+      "json",
+      "js"
+    ],
+    "rootDir": "src",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node",
+    "errorOnDeprecated": true,
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": -1
+      }
+    }
   },
   "files": [
     "LICENSE",
