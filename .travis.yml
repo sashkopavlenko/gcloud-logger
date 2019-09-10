@@ -11,3 +11,11 @@ before_script:
 
 after_script:
   - npm run build
+
+deploy:
+  provider: npm
+  email: '$NPM_EMAIL'
+  api_key: '$NPM_AUTH_TOKEN'
+  skip_cleanup: true
+  on:
+    tags: true
