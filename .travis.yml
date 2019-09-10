@@ -9,7 +9,7 @@ cache:
 before_script:
   - npx audit-ci --low
 
-after_script:
+before_deploy:
   - npm run build
 
 deploy:
