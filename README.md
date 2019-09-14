@@ -2,6 +2,7 @@
 
 [![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
+[![Test Coverage][coveralls-image]][coveralls-url]
 
 A simple logger wrapper for GCP with winston under the hood.
 
@@ -57,3 +58,5 @@ logger.emerg('Fatal');
 [npm-url]: https://npmjs.org/package/gcloud-logger
 [travis-image]: https://travis-ci.com/a-pavlenko/gcloud-logger.svg?branch=master
 [travis-url]: https://travis-ci.com/a-pavlenko/gcloud-logger
+[coveralls-image]: https://coveralls.io/repos/github/a-pavlenko/gcloud-logger/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/r/a-pavlenko/gcloud-logger?branch=master
