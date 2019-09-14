@@ -9,6 +9,9 @@ cache:
 before_script:
   - npx audit-ci --low
 
+script:
+  - npm t -- --coverageReporters=text-lcov | npx coveralls
+
 before_deploy:
   - npm run build
 
