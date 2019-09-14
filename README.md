@@ -1,6 +1,7 @@
 # gcloud-logger
 
-[![Build Status](https://travis-ci.com/a-pavlenko/gcloud-logger.svg?branch=master)](https://travis-ci.com/a-pavlenko/gcloud-logger)
+[![NPM Version][npm-image]][npm-url]
+[![Build Status][travis-image]][travis-url]
 
 A simple logger wrapper for GCP with winston under the hood.
 
@@ -51,3 +52,8 @@ logger.crit('Fatal');
 logger.alert('Fatal');
 logger.emerg('Fatal');
 ```
+
+[npm-image]: https://img.shields.io/npm/v/gcloud-logger.svg
+[npm-url]: https://npmjs.org/package/gcloud-logger
+[travis-image]: https://travis-ci.com/a-pavlenko/gcloud-logger.svg?branch=master
+[travis-url]: https://travis-ci.com/a-pavlenko/gcloud-logger
