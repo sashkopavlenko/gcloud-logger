@@ -1,5 +1,5 @@
 import { Log } from '@google-cloud/logging';
-import { createLogger } from '../index';
+import { createLogger } from './index';
 
 const exitMock = jest.fn();
 Object.defineProperty(process, 'exit', { value: exitMock });
@@ -12,42 +12,6 @@ class Exception extends TypeError {
     this.exception = true;
   }
 }
-
-describe('logger without options', () => {
-  test('logger should throw an error', () => {
-    expect(createLogger).toThrow();
-  });
-});
-
-describe('logger without transports', () => {
-  const logger = createLogger({ console: false });
-  let output = '';
-  let expectedOutput = '';
-
-  const error = '[winston] Attempt to write logs with no transports %j';
-  for (let i = 0; i < 8; i += 1) {
-    expectedOutput += error;
-  }
-
-  test('should print an error on attempt to write logs', () => {
-    const consoleErrorMock = jest.spyOn(console, 'error');
-    consoleErrorMock.mockImplementation(message => {
-      output += message;
-    });
-
-    logger.debug('debug');
-    logger.info('info');
-    logger.notice('notice');
-    logger.warning('warning');
-    logger.error('error');
-    logger.crit('crit');
-    logger.alert('alert');
-    logger.emerg('emerg');
-
-    consoleErrorMock.mockRestore();
-    expect(output).toMatch(expectedOutput);
-  });
-});
 
 describe('logger with output to console', () => {
   const logger = createLogger({ console: true });
@@ -122,7 +86,7 @@ describe('logger with output to console', () => {
   test('should log emerg multiple arguments', () => {
     logger.emerg('emerg', 'second', 'third', new Error('test err'));
     expect(output).toMatch(
-      /emerg .*second.*third.*Error: test err\n {4}at Object.test/
+      /emerg.*second.*third.*Error: test err\n {4}at Object.test/
     );
   });
 });
@@ -197,28 +161,10 @@ describe('logger with output to stackdriver', () => {
     expect(output).toMatch(/TypeError: TestException/);
   });
 
-  test('should exit on exception', async () => {
-    await logger.debug(new Exception('TestException'));
-    expect(exitMock).toHaveBeenCalledTimes(1);
-  });
-
-  test('should log an error occured while sending to stackdriver', done => {
-    logWriteMock
-      .mockImplementationOnce(() => {
-        throw new Error('Test');
-      })
-      .mockImplementationOnce(({ data }) => {
-        output = data.message;
-        expect(output).toMatch(/Error: Test/);
-        done();
-      });
-    logger.debug('debug');
-  });
-
   test('should log emerg multiple arguments to stackdriver', () => {
     logger.emerg('emerg', 'second', 'third', new Error('test err'));
     expect(output).toMatch(
-      /emerg .*second.*third.*Error: test err\n {4}at Object.test/
+      /emerg.*second.*third.*Error: test err\n {4}at Object.test/
     );
   });
 });

@@ -1,93 +1,27 @@
-import { Format, TransformableInfo, TransformFunction } from 'logform';
-import { SPLAT } from 'triple-beam';
-import * as util from 'util';
-import * as winston from 'winston';
-import * as Transport from 'winston-transport';
-import TransportStackdriver from './transports/stackdriver';
+import consoleLog from './transports/console';
+import stackdriver from './transports/stackdriver';
 
-const { format } = winston;
-const { levels, colors } = winston.config.syslog;
-
-winston.addColors(colors);
-
-interface Options {
-  console: boolean;
-  stackdriver?: {
-    projectId: string;
-    logName: string;
-  };
-}
-
-export function createLogger(options: Options): winston.Logger {
-  return winston.createLogger({
-    levels,
-    transports: getTransports(options),
-    format: format.combine(format(preserveStack)()),
-    level: 'debug',
-    exitOnError: false,
-  });
-}
-
-function getTransports({
-  console: consoleOutput,
-  stackdriver,
-}: Options): Transport[] {
-  const transports: Transport[] = [];
-  const config: Transport.TransportStreamOptions = { handleExceptions: true };
-
-  if (consoleOutput) {
-    transports.push(
-      new winston.transports.Console({ ...config, format: getConsoleFormat() })
-    );
+const logger = (options: Options) => (level: Level, ...rest: any[]) => {
+  if (options && options.console) {
+    consoleLog(level, ...rest);
   }
-
-  if (stackdriver) {
-    transports.push(
-      new TransportStackdriver(
-        { ...config, format: format.combine(format(preserveSplat(false))()) },
-        stackdriver
-      )
-    );
+  if (options && options.stackdriver) {
+    const stackdriverLog = stackdriver(options.stackdriver);
+    stackdriverLog(level, ...rest);
   }
-  return transports;
-}
+};
 
-function getConsoleFormat(): Format {
-  return format.combine(
-    format.colorize(),
-    format.timestamp(),
-    format(preserveSplat(true))(),
-    format.printf(formatPrint)
-  );
-}
-
-function preserveSplat(colorized: boolean): TransformFunction {
-  return (info: TransformableInfo): TransformableInfo => {
-    const preservedSplat = info[SPLAT]
-      ? info[SPLAT].map(<T>(a: T) => util.inspect(a, { colors: colorized }))
-      : [''];
-
-    return { ...info, preservedSplat };
+export const createLogger = (options: Options) => {
+  const log = logger(options);
+  return {
+    debug: (...rest: any[]) => log('debug', ...rest),
+    info: (...rest: any[]) => log('info', ...rest),
+    notice: (...rest: any[]) => log('notice', ...rest),
+    warning: (...rest: any[]) => log('warning', ...rest),
+    error: (...rest: any[]) => log('error', ...rest),
+    crit: (...rest: any[]) => log('crit', ...rest),
+    alert: (...rest: any[]) => log('alert', ...rest),
+    emerg: (...rest: any[]) => log('emerg', ...rest),
+    log,
   };
-}
-
-function formatPrint(info: TransformableInfo): string {
-  const { level, message, timestamp, preservedStack, preservedSplat } = info;
-
-  const msg =
-    typeof message === 'object'
-      ? util.inspect(message, { colors: true })
-      : message;
-
-  return util.format(
-    timestamp,
-    level,
-    preservedStack || msg,
-    ...preservedSplat
-  );
-}
-
-function preserveStack(info: TransformableInfo): TransformableInfo {
-  const preservedStack = info.stack;
-  return { ...info, preservedStack };
-}
+};
