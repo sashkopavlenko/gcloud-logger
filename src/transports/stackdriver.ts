@@ -1,13 +1,5 @@
+import { Logging } from '@google-cloud/logging';
 import * as util from 'util';
-import * as winston from 'winston';
-import * as Transport from 'winston-transport';
-import { TransformableInfo } from 'logform';
-import { Logging, Log, Entry } from '@google-cloud/logging';
-
-interface StackdriverLogOptions {
-  projectId: string;
-  logName: string;
-}
 
 interface SeverityLevels {
   readonly [key: string]: number;
@@ -24,74 +16,24 @@ const severityLevels: SeverityLevels = {
   emerg: 800,
 };
 
-export default class StackdriverTransport extends Transport {
-  logName: string;
+const stackdriverLogger = ({ projectId, logName }: StackdriverOptions) => {
+  const logging = new Logging({ projectId });
+  const log = logging.log(logName, { removeCircular: true });
 
-  projectId: string;
+  return (level: Level, ...rest: any[]) => {
+    const metadata = {
+      severity: severityLevels[level],
+      resource: { type: 'global' },
+    };
 
-  logger: Log;
-
-  constructor(
-    options: Transport.TransportStreamOptions,
-    { projectId, logName }: StackdriverLogOptions
-  ) {
-    super(options);
-    this.logName = logName;
-    this.projectId = projectId;
-    this.logger = this.initLogger();
-  }
-
-  initLogger() {
-    const logging = new Logging({ projectId: this.projectId });
-    return logging.log(this.logName, { removeCircular: true });
-  }
-
-  prepareEntry(info: TransformableInfo): Entry {
-    const { message, preservedStack, level, preservedSplat } = info;
-    const severity = severityLevels[level];
-    const metadata = { severity, resource: { type: 'global' } };
-
+    const message = rest.map(msg => util.inspect(msg)).join(' ');
     const payload = {
-      serviceContext: { service: this.logName },
-      message: util.format(preservedStack || message, ...preservedSplat),
+      message,
+      serviceContext: { service: logName },
     };
+    const entry = log.entry(metadata, payload);
+    log.write(entry);
+  };
+};
 
-    return this.logger.entry(metadata, payload);
-  }
-
-  async writeLog(
-    info: TransformableInfo,
-    callback: winston.LogCallback
-  ): Promise<void> {
-    const entry = this.prepareEntry(info);
-    await this.logger.write(entry);
-    this.emit('logged', info);
-    callback();
-    if (info.exception) {
-      process.exit(1);
-    }
-  }
-
-  async log(
-    info: TransformableInfo,
-    callback: winston.LogCallback
-  ): Promise<void> {
-    try {
-      await this.writeLog(info, callback);
-    } catch (e) {
-      this.errorHandler(e, callback);
-    }
-  }
-
-  errorHandler(e: Error, callback: winston.LogCallback) {
-    this.logger = this.initLogger();
-    const info = {
-      level: 'error',
-      noncolorizedLevel: 'error',
-      message: e.message,
-      preservedStack: e.stack,
-      preservedSplat: [''],
-    };
-    this.log(info, callback);
-  }
-}
+export default stackdriverLogger;
