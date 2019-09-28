@@ -4,7 +4,7 @@
 [![Build Status][travis-image]][travis-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
 
-A simple logger wrapper for GCP with winston under the hood.
+A simple lightweight logger for GCP Stackdriver.
 
 ## Installation
 
@@ -19,7 +19,7 @@ To initialize the logger pass the options object to the method `createLogger`.
 Configuration is simple and consists of next params:
 
 - `console` - writing logs to stdout;
-- `stackdriver` - sending logs to Stackdriver. Note: application must have access to your GCP project and permission to write logs.
+- `stackdriver` - sending logs to Stackdriver. Note: the application must have access to your GCP project and permission to write logs.
 
 You can omit any of these properties or set the value to falsy if it's not needed.
 
