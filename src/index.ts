@@ -1,27 +1,27 @@
 import consoleLog from './transports/console';
 import stackdriver from './transports/stackdriver';
 
-const logger = (options: Options) => (level: Level, ...rest: any[]) => {
+const logger = (options: Options) => (level: Level, messages: any[]) => {
   if (options && options.console) {
-    consoleLog(level, ...rest);
+    consoleLog(level, messages);
   }
   if (options && options.stackdriver) {
     const stackdriverLog = stackdriver(options.stackdriver);
-    stackdriverLog(level, ...rest);
+    stackdriverLog(level, messages);
   }
 };
 
 export const createLogger = (options: Options) => {
   const log = logger(options);
   return {
-    debug: (...rest: any[]) => log('debug', ...rest),
-    info: (...rest: any[]) => log('info', ...rest),
-    notice: (...rest: any[]) => log('notice', ...rest),
-    warning: (...rest: any[]) => log('warning', ...rest),
-    error: (...rest: any[]) => log('error', ...rest),
-    crit: (...rest: any[]) => log('crit', ...rest),
-    alert: (...rest: any[]) => log('alert', ...rest),
-    emerg: (...rest: any[]) => log('emerg', ...rest),
+    debug: (...messages: any[]) => log('debug', messages),
+    info: (...messages: any[]) => log('info', messages),
+    notice: (...messages: any[]) => log('notice', messages),
+    warning: (...messages: any[]) => log('warning', messages),
+    error: (...messages: any[]) => log('error', messages),
+    crit: (...messages: any[]) => log('crit', messages),
+    alert: (...messages: any[]) => log('alert', messages),
+    emerg: (...messages: any[]) => log('emerg', messages),
     log,
   };
 };

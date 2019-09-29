@@ -20,13 +20,13 @@ const stackdriverLogger = ({ projectId, logName }: StackdriverOptions) => {
   const logging = new Logging({ projectId });
   const log = logging.log(logName, { removeCircular: true });
 
-  return (level: Level, ...rest: any[]) => {
+  return (level: Level, messages: any[]) => {
     const metadata = {
       severity: severityLevels[level],
       resource: { type: 'global' },
     };
 
-    const message = rest.map(msg => util.inspect(msg)).join(' ');
+    const message = messages.map(msg => util.inspect(msg)).join(' ');
     const payload = {
       message,
       serviceContext: { service: logName },
