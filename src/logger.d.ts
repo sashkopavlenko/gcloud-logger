@@ -17,3 +17,5 @@ type Level =
   | 'crit'
   | 'alert'
   | 'emerg';
+
+type Log = (level: Level, messages: any[]) => void;

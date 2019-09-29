@@ -20,7 +20,7 @@ const stackdriverLogger = ({ projectId, logName }: StackdriverOptions) => {
   const logging = new Logging({ projectId });
   const log = logging.log(logName, { removeCircular: true });
 
-  return (level: Level, messages: any[]) => {
+  const stackdriverLog: Log = (level, messages) => {
     const metadata = {
       severity: severityLevels[level],
       resource: { type: 'global' },
@@ -34,6 +34,8 @@ const stackdriverLogger = ({ projectId, logName }: StackdriverOptions) => {
     const entry = log.entry(metadata, payload);
     log.write(entry);
   };
+
+  return stackdriverLog;
 };
 
 export default stackdriverLogger;
