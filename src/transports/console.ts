@@ -11,15 +11,15 @@ const colors = {
   cyan: '\x1b[36m',
 };
 
-const colorsLevelMap = {
-  debug: <Color>'cyan',
-  info: <Color>'blue',
-  notice: <Color>'yellow',
-  warning: <Color>'yellow',
-  error: <Color>'red',
-  crit: <Color>'red',
-  alert: <Color>'red',
-  emerg: <Color>'red',
+const colorsLevelMap: Record<Level, Color> = {
+  debug: 'cyan',
+  info: 'blue',
+  notice: 'yellow',
+  warning: 'yellow',
+  error: 'red',
+  crit: 'red',
+  alert: 'red',
+  emerg: 'red',
 };
 
 const colorize = (text: string, color: Color) =>
