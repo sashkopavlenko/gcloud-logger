@@ -1,14 +1,22 @@
 import consoleLog from './transports/console';
 import stackdriver from './transports/stackdriver';
 
-const logger = (options: Options) => (level: Level, messages: any[]) => {
+const logger = (options: Options) => {
+  const transports: Log[] = [];
+
   if (options && options.console) {
-    consoleLog(level, messages);
+    transports.push(consoleLog);
   }
+
   if (options && options.stackdriver) {
-    const stackdriverLog = stackdriver(options.stackdriver);
-    stackdriverLog(level, messages);
+    transports.push(stackdriver(options.stackdriver));
   }
+
+  const log: Log = (level, messages) => {
+    transports.forEach(transportLog => transportLog(level, messages));
+  };
+
+  return log;
 };
 
 export const createLogger = (options: Options) => {

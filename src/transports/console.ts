@@ -40,8 +40,9 @@ const formatPrint = (level: Level, messages: any[]): string => {
   );
 };
 
-const log = (level: Level, messages: any[]) => {
+const log: Log = (level, messages) => {
   const message = formatPrint(level, messages);
   process.stdout.write(message);
 };
+
 export default log;
