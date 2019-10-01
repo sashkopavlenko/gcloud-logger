@@ -1,11 +1,13 @@
 interface StackdriverOptions {
-  projectId: string;
-  logName: string;
+  readonly projectId: string;
+  readonly logName: string;
 }
 
 interface Options {
-  console: boolean;
-  stackdriver?: StackdriverOptions;
+  readonly console?: boolean;
+  readonly stackdriver?: StackdriverOptions;
+  readonly logExceptionLevel?: Level;
+  readonly logRejectionLevel?: Level;
 }
 
 type Level =
