@@ -1,67 +1,47 @@
-import { Log } from '@google-cloud/logging';
+import { Log, Entry } from '@google-cloud/logging';
 import { createLogger } from './index';
 
-const exitMock = jest.fn();
-Object.defineProperty(process, 'exit', { value: exitMock });
-
-class Exception extends TypeError {
-  exception: boolean;
-
-  constructor(message: string) {
-    super(message);
-    this.exception = true;
-  }
-}
+const processStdOutWriteMock = jest
+  .spyOn(process.stdout, 'write')
+  .mockImplementation(() => true);
 
 describe('logger with output to console', () => {
   const logger = createLogger({ console: true });
 
-  let output = '';
-  let processStdOutWriteMock: jest.SpyInstance;
-
-  beforeAll(() => {
-    processStdOutWriteMock = jest.spyOn(process.stdout, 'write');
-    processStdOutWriteMock.mockImplementation(message => {
-      output = message;
-    });
-  });
-
   beforeEach(() => {
-    output = '';
-  });
-
-  afterAll(() => {
-    processStdOutWriteMock.mockRestore();
+    processStdOutWriteMock.mockClear();
   });
 
   test('should log debug string', () => {
     logger.debug('debug');
-    expect(output).toMatch(/debug/);
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(/debug/);
   });
 
   test('should log debug error', () => {
     logger.debug(new Error('debug'));
-    expect(output).toMatch(/Error: debug/);
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(/Error: debug/);
   });
 
   test('should log debug object', () => {
     logger.debug({ testProp: 'testValue' });
-    expect(output).toMatch(/{ testProp: .*'testValue'.* }/);
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(
+      /{ testProp: .*'testValue'.* }/
+    );
   });
 
   test('should log info', () => {
     logger.info('info');
-    expect(output).toMatch(/info/);
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(/info/);
   });
 
   test('should log notice', () => {
     logger.notice('notice');
-    expect(output).toMatch(/notice/);
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(/notice/);
   });
 
   test('should log warning', () => {
     logger.warning('warning');
-    expect(output).toMatch(/warning/);
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(/warning/);
   });
 
   test('should log error', () => {
@@ -70,24 +50,29 @@ describe('logger with output to console', () => {
 
   test('should log crit', () => {
     logger.crit('crit');
-    expect(output).toMatch(/crit/);
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(/crit/);
   });
 
   test('should log alert', () => {
     logger.alert('alert');
-    expect(output).toMatch(/alert/);
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(/alert/);
   });
 
   test('should log emerg', () => {
     logger.emerg('emerg');
-    expect(output).toMatch(/emerg/);
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(/emerg/);
   });
 
   test('should log emerg multiple arguments', () => {
     logger.emerg('emerg', 'second', 'third', new Error('test err'));
-    expect(output).toMatch(
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(
       /emerg.*second.*third.*Error: test err\n {4}at Object.test/
     );
+  });
+
+  test('should not log exception', () => {
+    process.emit('uncaughtException', new TypeError());
+    expect(processStdOutWriteMock).not.toHaveBeenCalled();
   });
 });
 
@@ -97,19 +82,12 @@ describe('logger with output to stackdriver', () => {
     stackdriver: { projectId: 'test', logName: 'test' },
   });
 
-  let output = '';
-  let logWriteMock: jest.SpyInstance;
-
-  beforeAll(() => {
-    logWriteMock = jest.spyOn(Log.prototype, 'write');
-    logWriteMock.mockImplementation(({ data }) => {
-      output = data.message;
-    });
-  });
+  const logWriteMock = jest
+    .spyOn(Log.prototype, 'write')
+    .mockImplementation(() => {});
 
   beforeEach(() => {
-    exitMock.mockClear();
-    output = '';
+    logWriteMock.mockClear();
   });
 
   afterAll(() => {
@@ -118,53 +96,105 @@ describe('logger with output to stackdriver', () => {
 
   test('should log debug', () => {
     logger.debug('debug');
-    expect(output).toMatch('debug');
+    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
+      data: { message: "'debug'" },
+    });
   });
 
   test('should log info', () => {
     logger.info('info');
-    expect(output).toMatch(/info/);
+    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
+      data: { message: "'info'" },
+    });
   });
 
   test('should log notice', () => {
     logger.notice('notice');
-    expect(output).toMatch(/notice/);
+    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
+      data: { message: "'notice'" },
+    });
   });
 
   test('should log warning', () => {
     logger.warning('warning');
-    expect(output).toMatch(/warning/);
+    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
+      data: { message: "'warning'" },
+    });
   });
 
   test('should log error', () => {
     logger.error('error');
-    expect(output).toMatch(/error/);
+    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
+      data: { message: "'error'" },
+    });
   });
 
   test('should log crit', () => {
     logger.crit('crit');
-    expect(output).toMatch(/crit/);
+    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
+      data: { message: "'crit'" },
+    });
   });
 
   test('should log alert', () => {
     logger.alert('alert');
-    expect(output).toMatch(/alert/);
+    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
+      data: { message: "'alert'" },
+    });
   });
 
   test('should log emerg', () => {
     logger.emerg('emerg');
-    expect(output).toMatch(/emerg/);
-  });
-
-  test('should log exception', () => {
-    logger.debug(new Exception('TestException'));
-    expect(output).toMatch(/TypeError: TestException/);
+    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
+      data: { message: "'emerg'" },
+    });
   });
 
   test('should log emerg multiple arguments to stackdriver', () => {
     logger.emerg('emerg', 'second', 'third', new Error('test err'));
-    expect(output).toMatch(
+    const entry = <Entry>logWriteMock.mock.calls[0][0];
+    expect(entry.data.message).toMatch(
       /emerg.*second.*third.*Error: test err\n {4}at Object.test/
+    );
+  });
+});
+
+describe('log exceptions', () => {
+  const exitMock = jest.fn();
+  beforeEach(() => {
+    processStdOutWriteMock.mockClear();
+  });
+
+  beforeAll(() => {
+    process.removeAllListeners('uncaughtException');
+    process.removeAllListeners('unhandledRejection');
+    Object.defineProperty(process, 'exit', { value: exitMock });
+    createLogger({
+      console: true,
+      logExceptionLevel: 'alert',
+      logRejectionLevel: 'crit',
+    });
+  });
+
+  afterAll(() => {
+    process.removeAllListeners('uncaughtException');
+    process.removeAllListeners('unhandledRejection');
+  });
+
+  test('should log uncaughtException', () => {
+    process.emit('uncaughtException', new TypeError());
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(/TypeError/);
+  });
+
+  test('should exit on exception', () => {
+    process.emit('uncaughtException', new TypeError());
+    expect(exitMock).toHaveBeenCalled();
+  });
+
+  test('should log unhandledRejection', async () => {
+    process.emit('unhandledRejection', 'reject', new Promise(() => {}));
+    expect(processStdOutWriteMock.mock.calls[0][0]).toMatch(
+      /Unhandled Rejection at: Promise { <pending> } reason: reject/
     );
   });
 });
