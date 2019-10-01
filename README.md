@@ -11,7 +11,7 @@ A simple lightweight logger for GCP Stackdriver.
 1. [Usage requirements](#usage-requirements)
 2. [Installation](#installation)
 3. [Quick start](#quick-start)
-4. [Levels](#level)
+4. [Levels](#levels)
 5. [uncaughtException and unhandledRejection handlers](#uncaughtException-and-unhandledRejection-handlers)
 
 ## Usage requirements
