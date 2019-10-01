@@ -68,7 +68,7 @@ logger.emerg('Fatal');
 
 ## uncaughtException and unhandledRejection handlers
 
-You can add following properties to your options object to log `uncaughtException` and `unhandledRejection` errors:
+You can add the following properties to your options object to log `uncaughtException` and `unhandledRejection` errors:
 
 ```js
 const gcloudLogger = require('gcloud-logger');
