@@ -13,9 +13,10 @@ const logger = (options: Options) => {
     transports.push(stackdriver(options.stackdriver));
   }
 
-  const log: Log = (level, messages) => {
-    transports.forEach(transportLog => transportLog(level, messages));
-  };
+  const log: Log = (level, ...messages) =>
+    Promise.all(
+      transports.map(transportLog => transportLog(level, ...messages))
+    );
 
   return log;
 };
@@ -25,8 +26,8 @@ const addUncaughtExceptionHandler = (
   log: Log
 ) => {
   if (logExceptionLevel) {
-    process.on('uncaughtException', error => {
-      log(logExceptionLevel, [error]);
+    process.on('uncaughtException', async error => {
+      await log(logExceptionLevel, error);
       process.exit(1);
     });
   }
@@ -44,7 +45,7 @@ const addUnhandledRejectionHandler = (
         'reason:',
         reason
       );
-      log(logRejectionLevel, [message]);
+      log(logRejectionLevel, new Error(message));
     });
   }
 };
@@ -56,14 +57,14 @@ export const createLogger = (options: Options) => {
   addUnhandledRejectionHandler(options, log);
 
   return {
-    debug: (...messages: any[]) => log('debug', messages),
-    info: (...messages: any[]) => log('info', messages),
-    notice: (...messages: any[]) => log('notice', messages),
-    warning: (...messages: any[]) => log('warning', messages),
-    error: (...messages: any[]) => log('error', messages),
-    crit: (...messages: any[]) => log('crit', messages),
-    alert: (...messages: any[]) => log('alert', messages),
-    emerg: (...messages: any[]) => log('emerg', messages),
+    debug: (...messages: any[]) => log('debug', ...messages),
+    info: (...messages: any[]) => log('info', ...messages),
+    notice: (...messages: any[]) => log('notice', ...messages),
+    warning: (...messages: any[]) => log('warning', ...messages),
+    error: (...messages: any[]) => log('error', ...messages),
+    crit: (...messages: any[]) => log('crit', ...messages),
+    alert: (...messages: any[]) => log('alert', ...messages),
+    emerg: (...messages: any[]) => log('emerg', ...messages),
     log,
   };
 };

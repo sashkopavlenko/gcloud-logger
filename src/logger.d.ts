@@ -20,4 +20,4 @@ type Level =
   | 'alert'
   | 'emerg';
 
-type Log = (level: Level, messages: any[]) => void;
+type Log = (level: Level, ...messages: any[]) => Promise<any> | void;

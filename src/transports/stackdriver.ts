@@ -1,5 +1,5 @@
-import { Logging } from '@google-cloud/logging';
 import * as util from 'util';
+import { Logging } from '@google-cloud/logging';
 
 interface SeverityLevels {
   readonly [key: string]: number;
@@ -20,19 +20,19 @@ const stackdriverLogger = ({ projectId, logName }: StackdriverOptions) => {
   const logging = new Logging({ projectId });
   const log = logging.log(logName, { removeCircular: true });
 
-  const stackdriverLog: Log = (level, messages) => {
+  const stackdriverLog: Log = (level, ...messages) => {
     const metadata = {
       severity: severityLevels[level],
       resource: { type: 'global' },
     };
 
-    const message = messages.map(msg => util.inspect(msg)).join(' ');
-    const payload = {
-      message,
-      serviceContext: { service: logName },
-    };
-    const entry = log.entry(metadata, payload);
-    log.write(entry);
+    const entries = messages.map(message =>
+      log.entry(metadata, {
+        message: typeof message === 'object' ? util.inspect(message) : message,
+        serviceContext: { service: logName },
+      })
+    );
+    return log.write(entries);
   };
 
   return stackdriverLog;

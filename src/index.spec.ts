@@ -1,4 +1,4 @@
-import { Log, Entry } from '@google-cloud/logging';
+import { Log } from '@google-cloud/logging';
 import { createLogger } from './index';
 
 const processStdOutWriteMock = jest
@@ -95,67 +95,32 @@ describe('logger with output to stackdriver', () => {
   });
 
   test('should log debug', () => {
-    logger.debug('debug');
-    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
-      data: { message: "'debug'" },
+    const message = 'debug';
+    logger.debug(message);
+    const arg = logWriteMock.mock.calls[0][0];
+    const entry = Array.isArray(arg) ? arg[0] : arg;
+    expect(entry.toJSON()).toMatchObject({
+      jsonPayload: { fields: { message: { stringValue: message } } },
     });
   });
 
-  test('should log info', () => {
-    logger.info('info');
-    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
-      data: { message: "'info'" },
-    });
+  test('should log multiple arguments to stackdriver', () => {
+    logger.emerg('emerg', 'second', 'third');
+    const entries = logWriteMock.mock.calls[0][0];
+    expect(entries).toHaveLength(3);
   });
 
-  test('should log notice', () => {
-    logger.notice('notice');
-    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
-      data: { message: "'notice'" },
+  test('should log format error', () => {
+    logger.error(new Error('test'));
+    const arg = logWriteMock.mock.calls[0][0];
+    const entry = Array.isArray(arg) ? arg[0] : arg;
+    expect(entry.toJSON()).toMatchObject({
+      jsonPayload: {
+        fields: {
+          message: { stringValue: expect.stringContaining('Error: test') },
+        },
+      },
     });
-  });
-
-  test('should log warning', () => {
-    logger.warning('warning');
-    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
-      data: { message: "'warning'" },
-    });
-  });
-
-  test('should log error', () => {
-    logger.error('error');
-    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
-      data: { message: "'error'" },
-    });
-  });
-
-  test('should log crit', () => {
-    logger.crit('crit');
-    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
-      data: { message: "'crit'" },
-    });
-  });
-
-  test('should log alert', () => {
-    logger.alert('alert');
-    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
-      data: { message: "'alert'" },
-    });
-  });
-
-  test('should log emerg', () => {
-    logger.emerg('emerg');
-    expect(logWriteMock.mock.calls[0][0]).toMatchObject({
-      data: { message: "'emerg'" },
-    });
-  });
-
-  test('should log emerg multiple arguments to stackdriver', () => {
-    logger.emerg('emerg', 'second', 'third', new Error('test err'));
-    const entry = <Entry>logWriteMock.mock.calls[0][0];
-    expect(entry.data.message).toMatch(
-      /emerg.*second.*third.*Error: test err\n {4}at Object.test/
-    );
   });
 });
 
