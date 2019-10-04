@@ -104,10 +104,10 @@ describe('logger with output to stackdriver', () => {
     });
   });
 
-  test('should log multiple arguments to stackdriver', () => {
+  test('should log single entry to stackdriver', () => {
     logger.emerg('emerg', 'second', 'third');
-    const entries = logWriteMock.mock.calls[0][0];
-    expect(entries).toHaveLength(3);
+    const arg = logWriteMock.mock.calls[0][0];
+    expect(Array.isArray(arg)).toEqual(false);
   });
 
   test('should log format error', () => {

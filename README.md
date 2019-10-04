@@ -80,7 +80,7 @@ const logger = gcloudLogger.createLogger({
 });
 ```
 
-Note: the logger will exit with `process.exit(1)` after logging `uncaughtException`.
+Note: the logger will exit with `process.exit(1)` after logging `uncaughtException` or `unhandledRejection`.
 
 [npm-image]: https://img.shields.io/npm/v/gcloud-logger.svg
 [npm-url]: https://npmjs.org/package/gcloud-logger

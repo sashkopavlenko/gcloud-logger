@@ -38,14 +38,15 @@ const addUnhandledRejectionHandler = (
   log: Log
 ) => {
   if (logRejectionLevel) {
-    process.on('unhandledRejection', (reason, promise) => {
+    process.on('unhandledRejection', async (reason, promise) => {
       const message = util.format(
         'Unhandled Rejection at:',
         promise,
         'reason:',
         reason
       );
-      log(logRejectionLevel, new Error(message));
+      await log(logRejectionLevel, new Error(message));
+      process.exit(1);
     });
   }
 };
