@@ -12,7 +12,7 @@ A simple lightweight logger for GCP Stackdriver.
 2. [Installation](#installation)
 3. [Quick start](#quick-start)
 4. [Levels](#levels)
-5. [uncaughtException and unhandledRejection handlers](#uncaughtException-and-unhandledRejection-handlers)
+5. [uncaughtException and unhandledRejection handlers](#uncaughtexception-and-unhandledrejection-handlers)
 
 ## Usage requirements
 
