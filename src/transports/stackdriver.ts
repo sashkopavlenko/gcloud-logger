@@ -1,5 +1,6 @@
 import * as util from 'util';
 import { Logging } from '@google-cloud/logging';
+import { Log, StackdriverOptions } from '../log';
 
 interface SeverityLevels {
   readonly [key: string]: number;

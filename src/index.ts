@@ -1,6 +1,11 @@
 import * as util from 'util';
 import consoleLog from './transports/console';
 import stackdriver from './transports/stackdriver';
+import { Level, Log, Options } from './log';
+
+export type Logger = {
+  [K in Level]: (...rest: any[]) => Promise<any> | void;
+} & { log: Log };
 
 const logger = (options: Options) => {
   const transports: Log[] = [];
@@ -51,7 +56,7 @@ const addUnhandledRejectionHandler = (
   }
 };
 
-export const createLogger = (options: Options) => {
+export const createLogger = (options: Options): Logger => {
   const log = logger(options);
 
   addUncaughtExceptionHandler(options, log);
