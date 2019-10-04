@@ -1,4 +1,5 @@
 import * as util from 'util';
+import { Level, Log } from '../log';
 
 type Color = 'reset' | 'dim' | 'red' | 'yellow' | 'blue' | 'cyan';
 
