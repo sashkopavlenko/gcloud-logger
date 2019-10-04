@@ -26,13 +26,16 @@ const stackdriverLogger = ({ projectId, logName }: StackdriverOptions) => {
       resource: { type: 'global' },
     };
 
-    const entries = messages.map(message =>
-      log.entry(metadata, {
-        message: typeof message === 'object' ? util.inspect(message) : message,
-        serviceContext: { service: logName },
-      })
-    );
-    return log.write(entries);
+    const message = messages
+      .map(msg => (typeof msg === 'string' ? msg : util.inspect(msg)))
+      .join(' ');
+
+    const payload = {
+      message,
+      serviceContext: { service: logName },
+    };
+    const entry = log.entry(metadata, payload);
+    return log.write(entry);
   };
 
   return stackdriverLog;
