@@ -1,12 +1,8 @@
 import * as util from 'util';
 import { Logging } from '@google-cloud/logging';
-import { Log, StackdriverOptions } from '../log';
+import { Log, StackdriverOptions, Level } from '../log';
 
-interface SeverityLevels {
-  readonly [key: string]: number;
-}
-
-const severityLevels: SeverityLevels = {
+const severityLevels: Record<Level, number> = {
   debug: 100,
   info: 200,
   notice: 300,
