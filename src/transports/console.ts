@@ -30,7 +30,7 @@ const formatPrint = (level: Level, messages: any[]): string => {
   const timestamp = new Date().toLocaleString();
 
   const message = messages
-    .map(msg =>
+    .map((msg) =>
       typeof msg === 'string' ? msg : util.inspect(msg, { colors: true })
     )
     .join(' ');

@@ -24,7 +24,7 @@ const stackdriverLogger = ({ projectId, logName }: StackdriverOptions) => {
     };
 
     const message = messages
-      .map(msg => (typeof msg === 'string' ? msg : util.inspect(msg)))
+      .map((msg) => (typeof msg === 'string' ? msg : util.inspect(msg)))
       .join(' ');
 
     const payload = {

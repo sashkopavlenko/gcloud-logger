@@ -20,7 +20,7 @@ const logger = (options: Options) => {
 
   const log: Log = (level, ...messages) =>
     Promise.all(
-      transports.map(transportLog => transportLog(level, ...messages))
+      transports.map((transportLog) => transportLog(level, ...messages))
     );
 
   return log;
@@ -31,7 +31,7 @@ const addUncaughtExceptionHandler = (
   log: Log
 ) => {
   if (logExceptionLevel) {
-    process.on('uncaughtException', async error => {
+    process.on('uncaughtException', async (error) => {
       await log(logExceptionLevel, error);
       process.exit(1);
     });
