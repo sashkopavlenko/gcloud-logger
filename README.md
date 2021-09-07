@@ -84,7 +84,7 @@ Note: the logger will exit with `process.exit(1)` after logging `uncaughtExcepti
 
 [npm-image]: https://img.shields.io/npm/v/gcloud-logger.svg
 [npm-url]: https://npmjs.org/package/gcloud-logger
-[travis-image]: https://travis-ci.com/sashkopavlenko/gcloud-logger.svg?branch=master
-[travis-url]: https://travis-ci.com/sashkopavlenko/gcloud-logger
+[travis-image]: https://app.travis-ci.com/sashkopavlenko/gcloud-logger.svg?branch=master
+[travis-url]: https://app.travis-ci.com/sashkopavlenko/gcloud-logger
 [coveralls-image]: https://coveralls.io/repos/github/sashkopavlenko/gcloud-logger/badge.svg?branch=master
 [coveralls-url]: https://coveralls.io/r/sashkopavlenko/gcloud-logger?branch=master
