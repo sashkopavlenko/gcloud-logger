@@ -24,3 +24,4 @@ deploy:
   api_token: '$NPM_AUTH_TOKEN'
   on:
     tags: true
+  skip_cleanup: true

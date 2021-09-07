@@ -4,6 +4,7 @@
     "airbnb-typescript/base",
     "plugin:prettier/recommended"
   ],
+  "plugins": ["import"],
   "env": { "jest": true },
   "parserOptions": {
     "ecmaVersion": 2018,
