@@ -8,4 +8,4 @@
 
 ## Reporting a Vulnerability
 
-Please report vulnerability by creating an issue in this repo. Patch to fix it will be released ASAP.
+Please report vulnerability to sashko.pavlenko@protonmail.com. Patch to fix it will be released ASAP.
